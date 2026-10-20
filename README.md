@@ -2,6 +2,18 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
+I initially built this extension to replicate the home page feature of https://discuss.flarum.org , but ended creating something even better.
+
+So I decided to open-source this extension for everyone who want to have a beautiful homepage for their flarum deployment.
+
+The most outstanding features of it are **Widget-ized** and **Highly customizable**, you can implement various of modern frontend aesthetic designs without having to touch the code.
+
+This extension is also running on my own deployment: https://forum.monika.love
+
+Notice: This extension was made with massive help of AI, but under careful human supervise and field-tested.
+
+> Anything below this point was written by AI
+
 Build a configurable homepage for Flarum 2. Arrange widgets, content and appearance in a visual admin editor while keeping your forum's existing left navigation.
 
 ## Features
