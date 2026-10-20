@@ -353,6 +353,8 @@
       -webkit-mask-image: none !important;
     }
   }
+  // Widget prose may wrap anywhere; numeric stats retain core's word wrapping.
+  .DiscussionListItem-stats { overflow-wrap: normal; }
   .DiscussionListItem-info { max-width: none; }
   .DiscussionListItem-info .TagLabel { max-width: 100%; }
 }
