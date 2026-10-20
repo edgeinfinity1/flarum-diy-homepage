@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Keep imported FoF widgets available on the homepage when removed from FoF's layout, while preserving provider availability and permission checks.
+
 ## 0.1.0-beta.1
 
 Initial beta for Flarum 2.0.2 and later 2.x releases.

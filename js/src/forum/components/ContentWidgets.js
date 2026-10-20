@@ -177,7 +177,9 @@ export class FoFWidget extends Component {
   view() {
     const id = this.attrs.settings.widgetId;
     if (!id || id.startsWith('edgeinfinity-diy-homepage:')) return null;
-    const widget = app.widgets?.getbyId(id);
+    // FoF's getbyId() excludes providers removed from its own layout. Homepage
+    // imports use the registry independently, while retaining provider checks.
+    const widget = app.widgets?.widgets?.find((candidate) => candidate.id === id);
     if (!widget?.component || (typeof widget.isDisabled === 'function' ? widget.isDisabled() : widget.isDisabled)) return null;
     const extension = widget.extension || widget.id.split(':')[0];
     if (!(extension in flarum.extensions)) return null;
