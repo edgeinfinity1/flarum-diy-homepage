@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "widgets": [
+    {"id":"welcome","type":"banner","region":"top","enabled":true,"audience":"all","settings":{"actions":[{"action":"all","icon":"far fa-comments"},{"action":"signup","icon":"fas fa-user-plus","audience":"guests"}]}},
+    {"id":"search","type":"search","region":"main","enabled":true,"audience":"all","settings":{}},
+    {"id":"recent","type":"discussions","region":"main","enabled":true,"audience":"all","linkUrl":"/all","settings":{"query":"","sort":"-lastPostedAt","limit":6,"featured":true}},
+    {"id":"stats","type":"stats","region":"sidebar","enabled":true,"audience":"all","settings":{}},
+    {"id":"shortcuts","type":"links","region":"sidebar","enabled":true,"audience":"all","settings":{"links":[{"action":"all","icon":"far fa-comments"},{"action":"compose","icon":"fas fa-pen"},{"action":"login","icon":"fas fa-sign-in-alt","audience":"guests"}]}}
+  ]
+}

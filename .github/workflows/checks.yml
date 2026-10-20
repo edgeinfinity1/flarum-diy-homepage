@@ -1,0 +1,45 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, dom, fileinfo, gd, intl, mbstring, pdo_mysql, xml, zip
+          tools: composer:v2
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --prefer-dist --no-interaction --no-progress --no-plugins
+      - name: Check PHP syntax
+        run: find src tests -name '*.php' -print0 | xargs -0 -n1 php -l && php -l extend.php
+      - run: composer test
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Check committed frontend assets
+        run: git diff --exit-code -- dist

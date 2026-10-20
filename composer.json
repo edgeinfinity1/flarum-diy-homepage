@@ -1,0 +1,41 @@
+{
+  "name": "edgeinfinity/diy-homepage",
+  "description": "A configurable, widget-based homepage for Flarum, with a Friends of Flarum Widgets bridge.",
+  "type": "flarum-extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "EdgeInfinity"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "flarum/core": "^2.0.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "EdgeInfinity\\DiyHomepage\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": [
+      "@php tests/config.php",
+      "@php tests/middleware.php",
+      "@php tests/resources.php"
+    ]
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "DIY Homepage",
+      "category": "feature",
+      "icon": {
+        "name": "fas fa-house",
+        "backgroundColor": "#886a91",
+        "color": "#ffffff"
+      },
+      "optional-dependencies": [
+        "fof-forum-widgets-core"
+      ]
+    }
+  }
+}

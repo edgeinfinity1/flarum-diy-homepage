@@ -1,0 +1,14 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+
+/.github export-ignore
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/CONTRIBUTING.md export-ignore
+/RELEASING.md export-ignore
+/tests export-ignore

@@ -1,0 +1,648 @@
+.DiyHomePage {
+  .Page-content {
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+.DiyHome-top:empty, .DiyHome-widget:empty {
+  display: none;
+}
+
+.DiyHome-top {
+  margin-bottom: 28px;
+}
+
+.DiyHome-fullWidth {
+  margin-top: 30px;
+}
+
+.DiyHome-hero .Hero-subtitle {
+  white-space: pre-line;
+}
+
+.DiyHome-heroIcon {
+  display: inline-block;
+  margin-inline-end: .4em;
+}
+.DiyHome-heroIcon:empty { display: none; }
+
+.DiyHome-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+  gap: var(--gap);
+  align-items: start;
+
+  &--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.DiyHome-main, .DiyHome-sidebar {
+  min-width: 0;
+}
+
+.DiyHome-sidebar--sticky {
+  position: sticky;
+  top: calc(var(--header-height) + 18px);
+  max-height: calc(100dvh - var(--header-height) - 36px);
+  overflow-y: auto;
+  // Keep the gutter outside the grid column, preserving each widget's width.
+  margin-inline-end: -12px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  scrollbar-gutter: stable;
+  padding: 0;
+
+  > .DiyHome-widget { width: var(--sidebar-width); }
+
+  &:hover, &:focus-within {
+    scrollbar-color: var(--diy-home-scrollbar-thumb, var(--muted-more-color)) var(--diy-home-scrollbar-track, transparent);
+  }
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: transparent; box-shadow: none; }
+  &::-webkit-scrollbar-thumb { background: transparent; box-shadow: none; border-radius: 8px; }
+  &:hover::-webkit-scrollbar-thumb, &:focus-within::-webkit-scrollbar-thumb { background: var(--muted-more-color); }
+}
+
+.DiyHome-widget {
+  margin-bottom: 30px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  // Lift the whole background surface while its dropdown crosses other widgets.
+  &:has(.Dropdown.open) { position: relative; z-index: 2; }
+}
+.DiyHome-sidebar:has(.Dropdown.open) { z-index: 3; }
+
+.DiyHome-widgetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  .FofWidgets-Widget-title { margin: 0; color: var(--control-color); }
+  .FofWidgets-Widget-title-icon { margin-right: 6px; font-size: .9rem; vertical-align: middle; }
+  .FofWidgets-Widget-title-desc { font-size: .7rem; color: var(--muted-more-color); }
+}
+.DiyHome-heading { min-width: 0; }
+.DiyHome-subtitle { margin-top: 5px; line-height: 1.7; }
+.DiyHome-widget--emphasized {
+  .DiyHome-widgetHeader { margin-bottom: 14px; }
+  .FofWidgets-Widget-title { font-size: 16px; font-weight: 650; color: var(--text-color); }
+  .FofWidgets-Widget-title-icon { color: var(--primary-color); margin-right: 8px; font-size: .9em; }
+  .FofWidgets-Widget-title-desc { color: var(--muted-color); font-size: 12px; font-weight: normal; }
+}
+
+.DiyHome-more {
+  flex-shrink: 0;
+  max-width: 50%;
+  white-space: normal;
+  font-size: 12px;
+  margin-top: 4px;
+
+  .icon {
+    margin-left: 1px;
+    font-size: 10px;
+  }
+}
+
+.DiyHome-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 32px 36px;
+  border-radius: var(--diy-home-radius, var(--border-radius));
+  border: 1px solid var(--control-bg);
+  color: var(--text-color);
+  background: linear-gradient(115deg, var(--control-bg), var(--body-bg));
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, color-mix(in srgb, var(--primary-color) 12%, transparent), transparent 65%);
+    pointer-events: none;
+  }
+
+  h1 {
+    margin: 12px 0;
+    font-size: clamp(24px, 2.2vw, 36px);
+    line-height: 1.4;
+    letter-spacing: -.03em;
+    font-weight: 700;
+    max-width: 700px;
+  }
+
+  &--withImage {
+    color: #fff;
+    background: #342b3e;
+    border-color: transparent;
+
+    &::after {
+      background: linear-gradient(90deg, rgba(25, 15, 32, .86), rgba(25, 15, 32, .2));
+    }
+
+    .DiyHome-eyebrow, .DiyHome-bannerText {
+      color: inherit;
+    }
+  }
+}
+
+.DiyHome-bannerContent {
+  position: relative;
+  z-index: 1;
+  --diy-home-content-width: 78%;
+
+  > .DiyHome-textBlock, > .DiyHome-actions { max-width: var(--diy-home-content-width); }
+  > h1.DiyHome-textBlock { max-width: min(700px, var(--diy-home-content-width)); }
+  > .DiyHome-actions > .Button { max-width: 100%; white-space: normal; }
+}
+
+.DiyHome-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-color);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .12em;
+}
+
+.DiyHome-bannerText {
+  margin: 0 0 22px;
+  color: var(--muted-color);
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.DiyHome-bannerImage {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.DiyHome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+
+  .icon {
+    margin-right: 7px;
+  }
+}
+
+.DiyHome-secondaryAction {
+  background: var(--body-bg);
+  color: var(--sidenav-color, var(--muted-color));
+}
+
+.DiyHome-bannerDecoration {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  color: var(--primary-color);
+  opacity: .5;
+}
+
+.DiyHome-orbit {
+  position: absolute;
+  display: block;
+  border: 1px solid currentColor;
+  border-radius: 40%;
+  inset: 0;
+  transform: rotate(20deg);
+
+  &--two {
+    inset: 15px;
+    transform: rotate(-15deg);
+    opacity: .6;
+  }
+}
+
+.DiyHome-bannerMark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+}
+
+.DiyHome-notice {
+  padding: 18px 20px;
+  border-radius: var(--diy-home-radius, var(--border-radius));
+  border: 1px solid var(--control-bg);
+
+  p {
+    margin: 0;
+    white-space: pre-line;
+    line-height: 1.85;
+  }
+
+  .DiyHome-actions {
+    margin-top: 14px;
+  }
+
+  &--soft {
+    background: var(--control-bg);
+  }
+
+  &--accent {
+    border-inline-start: 3px solid var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 8%, var(--body-bg));
+  }
+}
+
+.DiyHome-action {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--sidenav-color, var(--muted-color));
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  .icon {
+    margin-right: 8px;
+  }
+
+  &:hover, &:focus-visible {
+    color: var(--sidenav-color-hover, var(--link-color));
+    background: var(--control-bg);
+    text-decoration: none;
+  }
+}
+
+.DiyHome-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  background: var(--control-bg);
+  border-radius: var(--diy-home-radius, var(--border-radius));
+  font-size: 13px;
+}
+
+.DiyHome-search {
+  display: flex;
+  gap: 10px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border-radius: var(--diy-home-radius, var(--border-radius));
+  }
+
+  .Button {
+    border-radius: var(--diy-home-radius, var(--border-radius));
+    flex-shrink: 0;
+  }
+}
+
+.DiyHome-discussion {
+  padding: 0;
+  border: 0;
+
+  &--featured {
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--control-bg);
+    border-radius: var(--diy-home-radius, var(--border-radius));
+    background: color-mix(in srgb, var(--control-bg) 38%, var(--body-bg));
+  }
+}
+
+.DiyHome-discussions {
+  .DiscussionListItem {
+    border-radius: var(--diy-home-radius, var(--border-radius));
+  }
+
+  .DiscussionListItem-content { min-width: 0; }
+  .DiscussionListItem-main { min-width: 0; padding-right: 0; }
+  .DiscussionListItem-title {
+    margin-right: 0 !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+  }
+  .DiscussionListItem-info > .item-tags {
+    position: static;
+    display: inline;
+    max-width: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    font-size: 11px;
+  }
+  .DiscussionListItem-stats { min-width: 42px; width: auto; }
+  .DiscussionListItem-info { max-width: none; }
+  .DiscussionListItem-info .TagLabel { max-width: 100%; }
+}
+
+.DiyHome-featuredBody { padding: 0 12px 10px; }
+.DiyHome-excerpt {
+  line-height: 1.85;
+  color: var(--muted-color);
+  font-size: 13px;
+  margin: 4px 0 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.DiyHome-readMore { font-size: 12px; }
+
+.DiyHome-stats {
+  margin: 0;
+  padding: 16px;
+  background: var(--control-bg);
+  border-radius: var(--diy-home-radius, var(--border-radius));
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    align-items: baseline;
+  }
+
+  dt {
+    color: var(--muted-color);
+    font-size: 12px;
+    font-weight: normal;
+
+    .icon {
+      margin-right: 7px;
+    }
+  }
+
+  dd {
+    font-weight: 650;
+    font-size: 17px;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.DiyHome-users {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li + li {
+    margin-top: 14px;
+  }
+}
+
+.DiyHome-user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--text-color);
+  font-size: 13px;
+
+  .Avatar {
+    --size: 34px;
+    flex-shrink: 0;
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  > .icon {
+    color: var(--muted-color);
+    font-size: 11px;
+  }
+}
+
+.DiyHome-userName, .DiyHome-userDetail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.DiyHome-userDetail {
+  color: var(--muted-color);
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.DiyHome-figure {
+  margin: 0;
+
+  figcaption {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted-color);
+  }
+}
+
+.DiyHome-image {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: var(--diy-home-radius, var(--border-radius));
+}
+
+.DiyHome-empty {
+  color: var(--muted-color);
+  padding: 16px 0;
+  font-size: 13px;
+}
+
+@media (max-width: 991.98px) {
+  .DiyHome-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .DiyHome-sidebar--sticky {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    margin-inline-end: 0;
+    > .DiyHome-widget { width: auto; }
+  }
+
+  .DiyHome-top {
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .DiyHome-banner {
+    padding: 25px 22px;
+    border-radius: var(--diy-home-radius, var(--border-radius));
+  }
+
+  .DiyHome-bannerContent {
+    --diy-home-content-width: 100%;
+  }
+
+  .DiyHome-bannerDecoration { filter: opacity(.25); }
+
+  .DiyHome-bannerText {
+    font-size: 13px;
+  }
+
+
+
+  .DiyHome-discussion--featured {
+    padding: 16px !important;
+  }
+}
+
+// Common surfaces inherit the same radius; avatars and the decorative orbits
+// keep their own geometry. FoF providers' standard content wrapper is covered.
+.DiyHome-widget {
+  .FofWidgets-Widget-content, .FormControl,
+  .DiyHome-actions > .Button:not(.Button--icon):not(.Button--flat):not(.Button--rounded),
+  .DiyHome-search > .Button {
+    border-radius: var(--diy-home-radius, var(--border-radius));
+  }
+  .DiyHome-more, .DiyHome-readMore, .DiyHome-action, .DiyHome-secondaryAction, .DiyHome-user {
+    text-decoration: none;
+    transition: color .15s, background .15s;
+    border-radius: var(--diy-home-radius, var(--border-radius));
+    &:hover, &:focus-visible {
+      text-decoration: none;
+      color: var(--sidenav-color-hover, var(--link-color));
+      background-color: var(--control-bg);
+    }
+  }
+  .DiyHome-more, .DiyHome-readMore, .DiyHome-action, .DiyHome-secondaryAction {
+    color: var(--sidenav-color, var(--muted-color));
+  }
+  .DiyHome-more, .DiyHome-readMore {
+    display: inline-flex; align-items: center; gap: 0; padding: 3px 5px;
+    .icon { margin-left: 1px; }
+  }
+}
+.DiyHome-user { padding: 5px; margin: -5px; }
+.DiyHome-userIdentity { flex: 1; min-width: 0; }
+.DiyHome-iconImage { width: 1em; height: 1em; display: inline-block; object-fit: contain; vertical-align: middle; }
+.DiyHome-widgetContent, .DiyHome-banner { position: relative; isolation: isolate; }
+.DiyHome-widgetContent { border-radius: var(--diy-home-radius, var(--border-radius)); }
+.DiyHome-widgetContent--custom {
+  padding: 16px;
+  .DiyHome-notice, .DiyHome-links, .DiyHome-stats { background: transparent; border-color: transparent; }
+}
+.DiyHome-surfaceForeground { position: relative; z-index: 1; min-width: 0; }
+.DiyHome-background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  img { position: absolute; inset: 0; width: 100%; height: 100%; }
+}
+.DiyHome-backgroundLayer { position: absolute; inset: 0; }
+.DiyHome-backgroundImage { position: absolute; inset: 0; }
+.DiyHome-background .DiyHome-backgroundManualImage {
+  inset: 0 auto auto;
+  // Intrinsic width fills the height; min-width applies the requested scale.
+  // Keep the image ratio and crop either axis using the configured position.
+  width: auto;
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+}
+.DiyHome-backgroundLayer--dark { display: none; }
+// Prefixes include light-hc and dark-hc, matching core theme selection.
+[data-theme^=dark] {
+  .DiyHome-backgroundLayer--light { display: none; }
+  .DiyHome-backgroundLayer--dark { display: block; }
+}
+.DiyHome-banner:has(> .DiyHome-background)::after { display: none; }
+.DiyHome-banner--noDecoration .DiyHome-bannerContent { --diy-home-content-width: 100%; }
+.DiyHome-bannerMark .DiyHome-iconImage { width: 65%; height: 65%; }
+.DiyHome-bannerDecoration { z-index: 1; pointer-events: none; }
+.DiyHome-textBlock {
+  white-space: pre-line;
+  line-height: 1.8;
+  margin: 0 0 14px;
+  .icon, .DiyHome-iconImage { margin-inline-end: 8px; }
+  &--eyebrow { color: var(--muted-color); font-size: 11px; font-weight: 650; letter-spacing: .12em; }
+  &--body { color: var(--muted-color); font-size: 14px; }
+  &--caption { color: var(--muted-color); font-size: 12px; }
+  &--custom { color: var(--diy-home-text-color-light, var(--heading-color)); font-size: 24px; font-weight: 700; line-height: 1.4; }
+}
+[data-theme^=dark] .DiyHome-textBlock--custom { color: var(--diy-home-text-color-dark, var(--heading-color)); }
+.DiyHome-actions + .DiyHome-textBlock { margin-top: 18px; }
+.DiyHome-banner--withImage .DiyHome-textBlock { color: inherit; }
+.DiyHome-banner--withImage .DiyHome-textBlock--custom { color: var(--diy-home-text-color-light, inherit); }
+[data-theme^=dark] .DiyHome-banner--withImage .DiyHome-textBlock--custom { color: var(--diy-home-text-color-dark, inherit); }
+.DiyHome-sidebar .DiyHome-discussions {
+  .DiscussionListItem-content { gap: 8px; padding: 10px 0; flex-wrap: wrap; }
+  .DiscussionListItem-main { flex-basis: 100%; order: 3; }
+  .DiscussionListItem-stats { margin-left: auto; }
+  .DiscussionListItem-title { font-size: 13px; }
+}
+@media (max-width: 767.98px) {
+  .DiyHome-discussions {
+    margin-inline: 0;
+    .DiscussionListItem-content { padding: 12px 0; gap: 10px; }
+    .DiscussionListItem-stats { position: static; gap: 5px; align-items: flex-end; }
+    .DiscussionListItem-title { font-size: 14px; }
+  }
+}
+
+.DiyHome-loading {
+  min-height: var(--diy-home-loading-height, 0px);
+}
+.DiyHome-skeleton {
+  display: block;
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--muted-color) 18%, transparent);
+}
+.DiyHome-skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 5px 0;
+  & + & { margin-top: 8px; }
+  &--discussion { min-height: 76px; padding: 12px; }
+  &--excerpt { min-height: 96px; }
+  &--featured { min-height: 190px; border: 1px solid var(--control-bg); border-radius: var(--diy-home-radius, var(--border-radius)); }
+}
+.DiyHome-skeletonAvatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; }
+.DiyHome-skeletonLines {
+  flex: 1;
+  > span { height: 12px; width: 85%; margin: 7px 0; }
+  > span:nth-child(2) { width: 55%; height: 10px; }
+}
+.DiyHome-skeletonNumber { width: 60px; line-height: inherit; }
+.DiyHome-count {
+  display: inline-grid;
+  // Separate properties avoid Less interpreting a slash as division.
+  > span { grid-row: 1; grid-column: 1; }
+  .DiyHome-countWidth { visibility: hidden; }
+}
+.DiyHome-fof .DiyHome-providerLoading {
+  background: var(--control-bg);
+  border-radius: var(--diy-home-radius, var(--border-radius));
+  display: grid;
+  align-items: center;
+}
+// Reserve the first frame too, before the provider observer is installed.
+.DiyHome-fof .FofWidgets-Widget-content:has(.LoadingIndicator, .LoadingIndicator-container, [aria-busy=true]) {
+  min-height: var(--diy-home-loading-height, 120px);
+  background: var(--control-bg);
+}
