@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.1.0 - 2026-10-21
+
+First stable release on Packagist, including the original widget editor and all preview fixes.
+
+- Publish version tags through GitHub Releases, with automated checks, Packagist synchronization and verification of the indexed commit.
+
 - Anchor animated statistics at the right edge so new digits extend to the left while the final width and accessible value stay stable.
 - Add English and Simplified Chinese frontend and admin screenshots captured from a running Flarum installation with temporary demonstration content.
 
@@ -11,7 +17,7 @@
 
 - Keep imported FoF widgets available on the homepage when removed from FoF's layout, while preserving provider availability and permission checks.
 
-## 0.1.0-beta.1
+## 0.1.0-beta.1 (local preview)
 
 Initial beta for Flarum 2.0.2 and later 2.x releases.
 
@@ -26,4 +32,4 @@ Initial beta for Flarum 2.0.2 and later 2.x releases.
 - English and Simplified Chinese translations; generic defaults inherit forum branding.
 - Compiled frontend assets, configuration and routing tests, and release checks.
 
-This version is a beta. Test it with your theme and widget providers before deployment.
+This preview tag was used for local testing and was not published to Packagist. Version 0.1.0 is the first public release.

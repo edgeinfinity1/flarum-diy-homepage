@@ -68,15 +68,12 @@ Administration · separate light/dark backgrounds
 
 Requires PHP `^8.3` and Flarum `^2.0.2`. FoF Widgets Core is optional. Compiled frontend assets are included; Node.js is not needed for installation.
 
-The repository is available for review on GitHub and **is not yet published on Packagist**. To try the current development branch, run these commands from your Flarum directory:
+Install the stable package from [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) in your Flarum directory:
 
 ```sh
-composer config repositories.diy-homepage vcs https://github.com/edgeinfinity1/flarum-diy-homepage
-composer require edgeinfinity/diy-homepage:dev-main
+composer require edgeinfinity/diy-homepage:"^0.1.0"
 php flarum cache:clear
 ```
-
-`dev-main` follows development changes. Back up your forum and existing layout before evaluation. Tagged-package installation instructions will follow publication.
 
 ## Getting started
 

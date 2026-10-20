@@ -3,6 +3,12 @@ name: Checks
 on:
   push:
   pull_request:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to validate before publication
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -15,6 +21,8 @@ jobs:
         php: ['8.3', '8.4']
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -34,6 +42,8 @@ jobs:
         working-directory: js
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -43,3 +53,14 @@ jobs:
       - run: npm run build
       - name: Check committed frontend assets
         run: git diff --exit-code -- dist
+
+  release-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test .github/scripts/update-packagist.test.mjs

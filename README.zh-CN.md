@@ -68,15 +68,12 @@
 
 需要 PHP `^8.3` 和 Flarum `^2.0.2`。FoF Widgets Core 为可选依赖。已包含编译后的前端资源，安装时无需 Node.js。
 
-目前为 GitHub 审阅阶段，**尚未发布到 Packagist**。如需试用当前开发分支，请在 Flarum 根目录运行：
+在 Flarum 根目录从 [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) 安装正式版本：
 
 ```sh
-composer config repositories.diy-homepage vcs https://github.com/edgeinfinity1/flarum-diy-homepage
-composer require edgeinfinity/diy-homepage:dev-main
+composer require edgeinfinity/diy-homepage:"^0.1.0"
 php flarum cache:clear
 ```
-
-`dev-main` 会跟随开发分支变化。试用前请备份论坛及已有布局；正式版本的安装命令将在发布后更新。
 
 ## 使用
 

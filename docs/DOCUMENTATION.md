@@ -2,7 +2,7 @@
 
 [English overview](../README.md) · [简体中文简介](../README.zh-CN.md)
 
-This reference covers configuration, widget behavior, permissions, integrations and development for DIY Homepage on Flarum 2. Start with the README for the feature overview and a short setup guide. The package currently targets Flarum `^2.0.2` and PHP `^8.3`; GitHub `main` contains the initial beta and the fixes listed under [Unreleased](../CHANGELOG.md#unreleased). Packagist publication is pending review.
+This reference covers configuration, widget behavior, permissions, integrations and development for DIY Homepage on Flarum 2. Start with the README for the feature overview and a short setup guide. Version 0.1.0 is the first stable release, available on [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage). The package targets Flarum `^2.0.2` and PHP `^8.3`.
 
 ## Contents
 
@@ -16,6 +16,7 @@ This reference covers configuration, widget behavior, permissions, integrations 
 - [Registering another widget type](#registering-another-widget-type)
 - [FoF Widgets Core bridge](#fof-widgets-core-bridge)
 - [Development](#development)
+- [Publishing releases and Packagist automation](#publishing-releases-and-packagist-automation)
 - [License](#license)
 
 ## Screenshots
@@ -28,15 +29,14 @@ The READMEs include [English](../README.md#screenshots) and [Simplified Chinese]
 - Optional: `fof/forum-widgets-core`. The bridge was exercised with Widgets Core 2.0.2.
 - Compiled `js/dist` assets are included. Node.js is needed only for development.
 
-The repository is available on GitHub for review; the package is not yet registered on Packagist. To install the current development branch, run these commands from your Flarum directory:
+Install the stable package from Packagist in your Flarum directory:
 
 ```sh
-composer config repositories.diy-homepage vcs https://github.com/edgeinfinity1/flarum-diy-homepage
-composer require edgeinfinity/diy-homepage:dev-main
+composer require edgeinfinity/diy-homepage:"^0.1.0"
 php flarum cache:clear
 ```
 
-`dev-main` follows development changes. Use it for evaluation and keep a backup of your forum and exported layout. A tagged Composer installation command will be documented after a reviewed release is registered on Packagist. Node.js is not required for installation.
+The `^0.1.0` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
 
 Enable **DIY Homepage** in the administration panel, then open its extension settings. A generic five-widget layout is supplied. Changes to the visual editor take effect after **Save Changes**; reload open forum pages to load the new configuration.
 
@@ -245,7 +245,40 @@ From a full source checkout, run `composer install`, `composer validate --strict
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) and [RELEASING.md](../RELEASING.md) in a full Git checkout for build, CI and release procedures. Development-only files are omitted from distribution archives. Integration review also needs a running forum: guest/member routes, admin saves, data permissions, themes, responsive widths and the optional FoF bridge.
 
-No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. This beta has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment. The public GitHub repository is available for review. Packagist registration and a new release tag remain separate release steps.
+No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. Version 0.1.0 has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment.
+
+## Publishing releases and Packagist automation
+
+Composer derives the package version from Git tags. Keep `composer.json` free of a fixed `version` field. The first public version is `v0.1.0` (Composer version `0.1.0`); use a new immutable tag for each later release. The private npm package only builds the included frontend assets and is not published to npm.
+
+### One-time configuration
+
+The repository is registered as [edgeinfinity/diy-homepage](https://packagist.org/packages/edgeinfinity/diy-homepage). Its GitHub Actions configuration uses:
+
+| Actions setting | Kind | Purpose |
+| --- | --- | --- |
+| `PACKAGIST_USERNAME` | Repository variable | Packagist account that maintains this package; configured as `edgeinfinity` in the upstream repository. |
+| `PACKAGIST_TOKEN` | Repository secret | API token belonging to that account, authorized to update the package. |
+
+Manage these under **Settings → Secrets and variables → Actions**. Tokens belong in encrypted Secrets; do not put them in workflow YAML, Git URLs or documentation. To rotate a token, update the existing secret. A fork with another package name/repository must register its own package and adjust the publication script's package name and canonical repository URL.
+
+### Publish a new version
+
+1. Update `CHANGELOG.md`, `js/package.json` and the root package version in `js/package-lock.json`. Keep both lockfile version fields consistent. Update installation examples when the supported version range changes.
+2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md), rebuild the frontend if needed, and commit the release changes. Check the installation's guest/member routes, permissions and optional providers when behavior changes.
+3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.1 -m "DIY Homepage 0.1.1"` followed by `git push origin v0.1.1`.
+4. Open **Releases → Draft a new release** on GitHub, select that existing tag, add release notes and click **Publish release**. Drafts do not trigger synchronization. Publishing a prerelease also triggers it; the supported tag suffixes are numbered alpha/beta/rc versions such as `v0.2.0-beta.1`.
+5. Check the **Publish to Packagist** workflow and the version on the package page. The workflow reruns the PHP, translation, frontend-build and publication-script checks against the selected tag before requesting an update. It then waits until Packagist reports that version at the exact tagged commit. A successful HTTP update request alone does not mark the job successful.
+
+`.github/workflows/packagist.yml` runs on `release.published`. Pushing a Git tag alone runs the normal checks; publish its GitHub Release to start this synchronization workflow. The workflow uses read-only GitHub permissions, supplies Packagist credentials only to its update step, and sends them in an HTTPS authorization header. No token appears in a request URL. Packagist reads the source and distribution from the public GitHub repository.
+
+### Retry and troubleshoot
+
+Under **Actions → Publish to Packagist → Run workflow**, choose the default branch and enter an existing version tag, such as `v0.1.0`. This reruns validation and synchronization without creating another release or moving a tag. You can also rerun a failed release workflow. Keep published tags unchanged; ship a new patch release to correct published code.
+
+A missing variable/secret, tag/frontend version mismatch, failed check or HTTP authentication error stops publication. Check the Actions settings and Packagist package ownership for HTTP 401/403. Temporary service errors are retried; if indexing takes longer than the verification window, inspect Packagist and retry the workflow. After success, `composer show edgeinfinity/diy-homepage --all` should list the new version.
+
+Publishing updates Composer's package index. It does not deploy code or change settings on forums using this extension; administrators update their own installations with Composer.
 
 ## License
 
