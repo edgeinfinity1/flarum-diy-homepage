@@ -326,6 +326,8 @@
 }
 
 .DiyHome-discussions {
+  // Keep core's fixed stats column and responsive item alignment. Sizing each
+  // row to its own counts makes the leading edge drift between discussions.
   .DiscussionListItem {
     border-radius: var(--diy-home-radius, var(--border-radius));
   }
@@ -351,7 +353,6 @@
       -webkit-mask-image: none !important;
     }
   }
-  .DiscussionListItem-stats { min-width: 42px; width: auto; }
   .DiscussionListItem-info { max-width: none; }
   .DiscussionListItem-info .TagLabel { max-width: 100%; }
 }
@@ -603,7 +604,7 @@
   .DiyHome-discussions {
     margin-inline: 0;
     .DiscussionListItem-content { padding: 12px 0; gap: 10px; }
-    .DiscussionListItem-stats { position: static; gap: 5px; align-items: flex-end; }
+    .DiscussionListItem-stats { position: static; gap: 5px; }
     .DiscussionListItem-title { font-size: 14px; }
   }
 }
