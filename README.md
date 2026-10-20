@@ -16,6 +16,35 @@ Notice: This extension was made with massive help of AI, but under careful human
 
 Build a configurable homepage for Flarum 2. Arrange widgets, content and appearance in a visual admin editor while keeping your forum's existing left navigation.
 
+## Screenshots
+
+Captured in Chromium from a running Flarum 2 installation. The bilingual demonstration uses temporary example content; the pictured theme and other installed extensions are optional.
+
+Homepage · desktop, light theme
+
+![Homepage · desktop, light theme](docs/screenshots/home-en-light.webp)
+
+Administration · visual layout editor
+
+![Administration · visual layout editor](docs/screenshots/admin-en-layout.webp)
+
+<details>
+<summary>Dark theme, mobile layout and appearance controls</summary>
+
+Homepage · dark theme
+
+![Homepage · dark theme](docs/screenshots/home-en-dark.webp)
+
+Homepage · mobile layout
+
+<a href="docs/screenshots/home-en-mobile.webp"><img src="docs/screenshots/home-en-mobile.webp" alt="Homepage · mobile layout" width="390"></a>
+
+Administration · separate light/dark backgrounds
+
+![Administration · separate light/dark backgrounds](docs/screenshots/admin-en-design.webp)
+
+</details>
+
 ## Features
 
 - Four layout regions: full width, upper, main and sidebar, with an optional sticky sidebar and stacked mobile layout.

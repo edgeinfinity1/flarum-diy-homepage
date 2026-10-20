@@ -639,6 +639,9 @@
   // Separate properties avoid Less interpreting a slash as division.
   > span { grid-row: 1; grid-column: 1; }
   .DiyHome-countWidth { visibility: hidden; }
+  // Keep the units at the right edge while larger values grow to the left.
+  // The hidden final value still reserves width; reduced motion uses the same layout.
+  .DiyHome-countValue { text-align: right; }
 }
 .DiyHome-fof .DiyHome-providerLoading {
   background: var(--control-bg);

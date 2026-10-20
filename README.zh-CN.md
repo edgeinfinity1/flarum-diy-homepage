@@ -16,6 +16,35 @@
 
 为 Flarum 2 构建可自由组合的首页。通过后台可视化编辑器安排微件、内容和外观，同时保留论坛原有的左侧导航。
 
+## 实机截图
+
+以下截图通过 Chromium 在运行中的 Flarum 2 环境拍摄，使用临时双语演示内容。图中的主题和其它扩展为该环境的可选配置。
+
+首页 · 桌面浅色主题
+
+![首页 · 桌面浅色主题](docs/screenshots/home-zh-CN-light.webp)
+
+后台 · 可视化布局编辑器
+
+![后台 · 可视化布局编辑器](docs/screenshots/admin-zh-CN-layout.webp)
+
+<details>
+<summary>查看深色主题、手机布局和外观设置</summary>
+
+首页 · 深色主题
+
+![首页 · 深色主题](docs/screenshots/home-zh-CN-dark.webp)
+
+首页 · 手机布局
+
+<a href="docs/screenshots/home-zh-CN-mobile.webp"><img src="docs/screenshots/home-zh-CN-mobile.webp" alt="首页 · 手机布局" width="390"></a>
+
+后台 · 独立浅色／深色背景设置
+
+![后台 · 独立浅色／深色背景设置](docs/screenshots/admin-zh-CN-design.webp)
+
+</details>
+
 ## 特性
 
 - 四个布局区域：全宽、上方、主栏和侧栏，支持固定侧栏及手机端自动堆叠。

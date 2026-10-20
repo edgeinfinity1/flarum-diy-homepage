@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Anchor animated statistics at the right edge so new digits extend to the left while the final width and accessible value stay stable.
+- Add English and Simplified Chinese frontend and admin screenshots captured from a running Flarum installation with temporary demonstration content.
+
 - Add concise English and Simplified Chinese READMEs with language links, move the full reference into `docs/DOCUMENTATION.md`, and add GitHub source, issue and documentation metadata.
 
 - Prevent homepage discussion tags from being vertically clipped by floating-list overflow and site-wide fade masks, including on hover.

@@ -6,6 +6,7 @@ This reference covers configuration, widget behavior, permissions, integrations 
 
 ## Contents
 
+- [Screenshots](#screenshots)
 - [Requirements and installation](#requirements-and-installation)
 - [Routes and layout](#routes-and-layout)
 - [Built-in widgets](#built-in-widgets)
@@ -16,6 +17,10 @@ This reference covers configuration, widget behavior, permissions, integrations 
 - [FoF Widgets Core bridge](#fof-widgets-core-bridge)
 - [Development](#development)
 - [License](#license)
+
+## Screenshots
+
+The READMEs include [English](../README.md#screenshots) and [Simplified Chinese](../README.zh-CN.md#实机截图) galleries covering the desktop homepage in light/dark themes, the mobile layout, the admin layout editor and separate light/dark background controls. See [screenshot notes](screenshots/README.md) for the capture environment and demonstration content.
 
 ## Requirements and installation
 
@@ -79,7 +84,7 @@ Native data widgets (`discussions`, `users`, `stats`) default to `settings.loadM
 
 Loading states render the widget's background immediately. Discussions and users reserve rows according to their configured limit; statistics render their configured labels before counts arrive. An optional instance-level `loadingHeight` (0–3000px, blank or 0 for automatic) overrides the minimum reserved content height while loading. Imported FoF providers retain their own loading behavior and permissions. Their standard loading indicators reserve 120px initially, then reuse the measured height for the same widget, actor and viewport. Measurements are held in session storage for up to 30 minutes and never contain record data. Provider preloading remains controlled by FoF Widgets Core and the provider.
 
-Statistics count up after loading with an ease-out animation. `settings.animateNumbers: false` disables it. The final width and accessible value remain stable during animation, and the browser's reduced-motion preference disables the animation automatically.
+Statistics count up after loading with an ease-out animation. The units stay at the right edge as additional digits extend to the left. `settings.animateNumbers: false` disables it. The final width and accessible value remain stable during animation, and the browser's reduced-motion preference disables the animation automatically.
 
 Discussion **Show post excerpts** (`settings.showExcerpt`) defaults to true, independently of **Feature the first discussion** (`settings.featured`). Disabling it removes both ordinary and featured summaries, including when another route has already loaded posts into the frontend store. Ordinary summaries reuse FoF Synopsis when enabled, including its first/last-post selection, tag overrides and member display preferences. Homepage queries explicitly load the selected source post, so a direct visit and a return from All Discussions show the same summaries. Without FoF Synopsis, a plain first-post excerpt is used. Ordinary rows keep the core list padding without an extra homepage separator or row padding.
 
