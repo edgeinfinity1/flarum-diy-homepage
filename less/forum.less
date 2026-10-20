@@ -338,13 +338,18 @@
     overflow-wrap: anywhere;
     font-size: 15px;
   }
-  .DiscussionListItem-info > .item-tags {
+  // Inline tags must not inherit floating-list clipping or site-wide fade masks.
+  .DiscussionListItem .DiscussionListItem-info > .item-tags {
     position: static;
     display: inline;
-    max-width: none !important;
-    mask-image: none !important;
-    -webkit-mask-image: none !important;
+    overflow: visible;
     font-size: 11px;
+
+    &, &:hover {
+      max-width: none !important;
+      mask-image: none !important;
+      -webkit-mask-image: none !important;
+    }
   }
   .DiscussionListItem-stats { min-width: 42px; width: auto; }
   .DiscussionListItem-info { max-width: none; }

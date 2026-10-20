@@ -37,5 +37,11 @@
         "fof-forum-widgets-core"
       ]
     }
+  },
+  "homepage": "https://github.com/edgeinfinity1/flarum-diy-homepage",
+  "support": {
+    "issues": "https://github.com/edgeinfinity1/flarum-diy-homepage/issues",
+    "source": "https://github.com/edgeinfinity1/flarum-diy-homepage",
+    "docs": "https://github.com/edgeinfinity1/flarum-diy-homepage/blob/main/docs/DOCUMENTATION.md"
   }
 }

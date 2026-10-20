@@ -25,4 +25,6 @@ Keep built-in defaults generic and translate visible text through the extension'
 
 For changes affecting behavior, review guest/member navigation, administrator saves, restricted data, light/dark and high-contrast themes, mobile spacing and loading states. Check the FoF bridge when changing shared registry or widget rendering behavior. Include relevant test results and compatibility limits in the change description.
 
+The [full documentation](docs/DOCUMENTATION.md) covers configuration, widget registration and the FoF bridge. Keep [README.md](README.md) and [README.zh-CN.md](README.zh-CN.md) concise and aligned when changing user-facing features.
+
 See [RELEASING.md](RELEASING.md) for packaging and versioning.

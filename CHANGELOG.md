@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add concise English and Simplified Chinese READMEs with language links, move the full reference into `docs/DOCUMENTATION.md`, and add GitHub source, issue and documentation metadata.
+
+- Prevent homepage discussion tags from being vertically clipped by floating-list overflow and site-wide fade masks, including on hover.
+
 - Keep imported FoF widgets available on the homepage when removed from FoF's layout, while preserving provider availability and permission checks.
 
 ## 0.1.0-beta.1
