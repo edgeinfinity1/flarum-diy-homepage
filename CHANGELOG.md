@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Verify publication through Composer's P2 index to avoid the package-details API's twelve-hour cache, and use the selected workflow's scripts when retrying an immutable release tag.
+
 ## 0.1.0 - 2026-10-21
 
 First stable release on Packagist, including the original widget editor and all preview fixes.

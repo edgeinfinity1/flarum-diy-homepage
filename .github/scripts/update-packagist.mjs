@@ -19,6 +19,22 @@ export function validateRelease({ tag, username, token, composer, frontend }) {
   return version;
 }
 
+export function indexedVersions(metadata) {
+  const versions = metadata.packages?.[packageName] || [];
+  if (metadata.minified !== 'composer/2.0') return versions;
+  // Composer's P2 format inherits omitted fields from the preceding version.
+  let previous = {};
+  return versions.map(changes => {
+    const current = { ...previous };
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === '__unset') delete current[key];
+      else current[key] = value;
+    }
+    previous = current;
+    return current;
+  });
+}
+
 export async function synchronize({ tag, username, token, composer, frontend, commit }, {
   request = fetch, pause = delay, attempts = 24,
 } = {}) {
@@ -53,13 +69,15 @@ export async function synchronize({ tag, username, token, composer, frontend, co
 
   for (let attempt = 0; attempt < attempts; attempt++) {
     try {
-      const response = await request(`https://packagist.org/packages/${packageName}.json`, {
+      // The package-details API can remain cached for twelve hours. P2 is the
+      // static installation index used by Composer and reflects published tags.
+      const response = await request(`https://repo.packagist.org/p2/${packageName}.json`, {
         redirect: 'error', signal: AbortSignal.timeout(15_000),
         headers: { 'User-Agent': userAgent, 'Cache-Control': 'no-cache' },
       });
       if (response.ok) {
         const metadata = await response.json();
-        const indexed = Object.values(metadata.package?.versions || {}).find(item => item.version?.replace(/^v/, '') === version);
+        const indexed = indexedVersions(metadata).find(item => item.version?.replace(/^v/, '') === version);
         if (indexed?.source?.reference === commit) return { packageName, version, commit };
       }
     } catch { /* Indexing is asynchronous; retry without exposing response bodies or credentials. */ }

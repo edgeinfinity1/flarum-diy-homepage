@@ -28,15 +28,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Check out the selected workflow's publication scripts
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: release-automation
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag }}
+          path: release-source
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Test the publication scripts
+        run: node --test release-automation/.github/scripts/update-packagist.test.mjs
       - name: Update Packagist and verify the indexed version
-        run: node .github/scripts/update-packagist.mjs
+        run: node ../release-automation/.github/scripts/update-packagist.mjs
+        working-directory: release-source
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
           PACKAGIST_USERNAME: ${{ vars.PACKAGIST_USERNAME }}

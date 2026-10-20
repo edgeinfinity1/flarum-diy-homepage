@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { synchronize } from './update-packagist.mjs';
+import { indexedVersions, synchronize } from './update-packagist.mjs';
 
 const release = { tag: 'v0.1.0', username: 'example-maintainer', token: 'example-placeholder',
   composer: { name: 'edgeinfinity/diy-homepage' }, frontend: { version: '0.1.0', private: true }, commit: 'a'.repeat(40) };
 const response = (status, body) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
-const indexed = commit => ({ package: { versions: { 'v0.1.0': { version: 'v0.1.0', source: { reference: commit } } } } });
+const indexed = commit => ({ packages: { 'edgeinfinity/diy-homepage': [{ version: 'v0.1.0', source: { reference: commit } }] } });
 
 test('refuses missing credentials and mismatched tags before making a request', async () => {
   let calls = 0;
@@ -26,11 +26,23 @@ test('sends credentials only in the update header and waits for the exact commit
       assert.deepEqual(JSON.parse(options.body), { repository: 'https://github.com/edgeinfinity1/flarum-diy-homepage' });
       return response(202, { status: 'success' });
     }
+    assert.equal(url, 'https://repo.packagist.org/p2/edgeinfinity/diy-homepage.json');
     assert.equal(options.headers.Authorization, undefined);
     return response(200, indexed(calls === 2 ? 'b'.repeat(40) : release.commit));
   } });
   assert.equal(calls, 3);
   assert.equal(result.version, '0.1.0');
+});
+
+test('expands inherited P2 fields and honors fields removed by older versions', () => {
+  const metadata = { minified: 'composer/2.0', packages: { 'edgeinfinity/diy-homepage': [
+    { version: 'v0.1.1', source: { reference: release.commit }, description: 'new' },
+    { version: 'v0.1.0', description: '__unset' },
+  ] } };
+  const versions = indexedVersions(metadata);
+  assert.equal(versions[1].source.reference, release.commit);
+  assert.equal('description' in versions[1], false);
+  assert.equal(versions[0].description, 'new');
 });
 
 test('retries a transient API failure', async () => {
