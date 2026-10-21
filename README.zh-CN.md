@@ -71,7 +71,7 @@
 在 Flarum 根目录从 [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) 安装正式版本：
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.0"
+composer require edgeinfinity/diy-homepage:"^0.1.1"
 php flarum cache:clear
 ```
 

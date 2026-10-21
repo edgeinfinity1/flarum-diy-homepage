@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-- Preserve core's fixed discussion-statistics column so counts of different lengths share a leading edge, keep numeric statistics unbroken by the widget's general text wrapping, and inherit core's mobile item alignment instead of forcing it to the right.
+## 0.1.1 - 2026-10-21
+
+- Restore core's fixed discussion-statistics column so rows with counts of different lengths share a leading edge.
+- Keep large view counts on one line by excluding numeric statistics from the widget's general text wrapping.
+- Inherit core's mobile statistics alignment instead of forcing the items to the right.
 - Verify publication through Composer's P2 index to avoid the package-details API's twelve-hour cache, and use the selected workflow's scripts when retrying an immutable release tag.
 
 ## 0.1.0 - 2026-10-21

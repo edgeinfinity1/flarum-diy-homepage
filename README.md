@@ -71,7 +71,7 @@ Requires PHP `^8.3` and Flarum `^2.0.2`. FoF Widgets Core is optional. Compiled 
 Install the stable package from [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.0"
+composer require edgeinfinity/diy-homepage:"^0.1.1"
 php flarum cache:clear
 ```
 
