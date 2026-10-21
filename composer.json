@@ -40,8 +40,15 @@
   },
   "homepage": "https://github.com/edgeinfinity1/flarum-diy-homepage",
   "support": {
+    "forum": "https://discuss.flarum.org/d/40135",
     "issues": "https://github.com/edgeinfinity1/flarum-diy-homepage/issues",
     "source": "https://github.com/edgeinfinity1/flarum-diy-homepage",
     "docs": "https://github.com/edgeinfinity1/flarum-diy-homepage/blob/main/docs/DOCUMENTATION.md"
-  }
+  },
+  "funding": [
+    {
+      "type": "other",
+      "url": "https://app.unifans.io/c/edgemonix"
+    }
+  ]
 }

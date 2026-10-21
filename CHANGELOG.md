@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add the official discussion and donation links to the standard admin extension header alongside the existing source and documentation links.
+
 ## 0.1.1 - 2026-10-21
 
 - Restore core's fixed discussion-statistics column so rows with counts of different lengths share a leading edge.
