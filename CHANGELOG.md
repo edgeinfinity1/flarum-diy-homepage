@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add the official discussion and donation links to the standard admin extension header alongside the existing source and documentation links.
+- Point the author link to the maintainer's GitHub profile and the website link to the project forum.
 
 ## 0.1.1 - 2026-10-21
 

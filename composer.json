@@ -5,7 +5,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "EdgeInfinity"
+      "name": "EdgeInfinity",
+      "homepage": "https://github.com/edgeinfinity1"
     }
   ],
   "require": {
@@ -38,7 +39,7 @@
       ]
     }
   },
-  "homepage": "https://github.com/edgeinfinity1/flarum-diy-homepage",
+  "homepage": "https://forum.monika.love",
   "support": {
     "forum": "https://discuss.flarum.org/d/40135",
     "issues": "https://github.com/edgeinfinity1/flarum-diy-homepage/issues",
