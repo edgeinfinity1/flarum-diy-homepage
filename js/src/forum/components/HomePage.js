@@ -45,7 +45,8 @@ export default class HomePage extends Page {
           'aria-label': text('forum.sidebar'),
         }, sidebar),
       ]),
-      !this.config.widgets.length && m('p.DiyHome-empty', text('forum.empty_home')),
+      !this.config.widgets.some((widget) => ['fullWidth', 'top', 'main', 'sidebar'].includes(widget.region)
+        && widget.enabled !== false && visible(widget.audience)) && m('p.DiyHome-empty', text('forum.empty_home')),
     ]);
   }
 }

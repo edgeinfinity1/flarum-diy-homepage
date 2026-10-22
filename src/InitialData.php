@@ -29,6 +29,7 @@ class InitialData
         $data = [];
         foreach ($config['widgets'] as $widget) {
             if (($widget['enabled'] ?? true) === false
+                || ($widget['region'] ?? '') === 'configOnly'
                 || (($widget['audience'] ?? 'all') === 'members' && $actor->isGuest())
                 || (($widget['audience'] ?? 'all') === 'guests' && !$actor->isGuest())
                 || ($widget['settings']['loadMode'] ?? 'preload') === 'async'

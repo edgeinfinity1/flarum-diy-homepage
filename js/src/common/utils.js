@@ -64,7 +64,7 @@ export function validConfig(value) {
   for (const widget of config.widgets) {
     if (!widget || typeof widget !== 'object' || Array.isArray(widget)) throw new Error(text('admin.invalid_config'));
     if (!/^[a-zA-Z0-9_-]{1,64}$/.test(widget.id) || seen.has(widget.id) || !/^[a-zA-Z0-9_.:-]{1,100}$/.test(widget.type)
-      || !['fullWidth', 'top', 'main', 'sidebar'].includes(widget.region) || !['all', 'guests', 'members'].includes(widget.audience || 'all')) {
+      || !['fullWidth', 'top', 'main', 'sidebar', 'configOnly'].includes(widget.region) || !['all', 'guests', 'members'].includes(widget.audience || 'all')) {
       throw new Error(text('admin.invalid_config'));
     }
     if (widget.enabled !== undefined && typeof widget.enabled !== 'boolean') throw new Error(text('admin.invalid_config'));
@@ -74,6 +74,15 @@ export function validConfig(value) {
     }
     const settings = widget.settings || {};
     if (typeof settings !== 'object' || Array.isArray(settings)) throw new Error(text('admin.invalid_config'));
+    for (const field of app.diyHomepage?.get(widget.type)?.fields || []) {
+      if (field.type !== 'themeColors' || settings[field.key] === undefined) continue;
+      const colors = settings[field.key];
+      if (!colors || typeof colors !== 'object' || Array.isArray(colors)
+        || Object.keys(colors).some((theme) => !['light', 'dark'].includes(theme))
+        || Object.values(colors).some((color) => typeof color !== 'string' || (color !== '' && !/^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i.test(color)))) {
+        throw new Error(text('admin.invalid_config'));
+      }
+    }
     if (!validSafeWidth(settings.actionsSafeWidth)) throw new Error(text('admin.invalid_config'));
     if (settings.texts !== undefined) {
       if (!Array.isArray(settings.texts) || settings.texts.length > 20) throw new Error(text('admin.invalid_config'));

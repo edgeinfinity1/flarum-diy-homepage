@@ -1,3 +1,4 @@
+import app from 'flarum/forum/app';
 import PageStructure from 'flarum/forum/components/PageStructure';
 
 export default class HomePageStructure extends PageStructure {

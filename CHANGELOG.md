@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.2 - 2026-10-22
+
+- Add a default-on setting to show or hide the Flarum banner on discussion index pages and the DIY homepage.
+- Let numeric provider fields declare their own editor range and step.
+- Add a configuration-only region for fully editable instances that stay off the homepage and remain available in FoF's widget store.
+- Preserve each exported instance's heading style instead of forcing FoF headings; duplicate into configuration only for independent content and appearance.
+- Add a theme-color field for external widget providers and opt-in loading-height controls.
 - Add the official discussion and donation links to the standard admin extension header alongside the existing source and documentation links.
 - Point the author link to the maintainer's GitHub profile and the website link to the project forum.
 

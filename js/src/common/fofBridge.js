@@ -8,6 +8,7 @@ export default function registerFoFWidgets(app, config, WidgetCard = null) {
     const definition = app.diyHomepage.get(widget.type);
     class HomepageAdapter extends Component {
       view() {
+        // Configuration-only instances keep their own appearance and content in FoF.
         return WidgetCard ? m(WidgetCard, { widget }) : null;
       }
     }

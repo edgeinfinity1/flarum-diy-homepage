@@ -15,8 +15,8 @@ Before each release:
 For the next patch release, the tag commands would be:
 
 ```sh
-git tag -a v0.1.2 -m "DIY Homepage 0.1.2"
-git push origin v0.1.2
+git tag -a v0.1.3 -m "DIY Homepage 0.1.3"
+git push origin v0.1.3
 ```
 
 Publishing the corresponding GitHub Release starts synchronization. A bare tag push runs checks but does not trigger that workflow. For retries, use **Actions → Publish to Packagist → Run workflow** and enter the existing tag. Never move a published tag. The local preview tag `v0.1.0-beta.1` predates the public release and remains unchanged.

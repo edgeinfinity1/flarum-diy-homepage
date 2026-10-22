@@ -1,6 +1,8 @@
 <?php
 
+require_once __DIR__.'/bootstrap.php';
 require_once __DIR__.'/../src/Config.php';
+require_once __DIR__.'/../src/Listener/ValidateSettings.php';
 
 use EdgeInfinity\DiyHomepage\Config;
 
@@ -22,9 +24,28 @@ function rejected(array|string $value): bool {
 $config = Config::validate(file_get_contents(__DIR__.'/../resources/default.json'));
 check(count($config['widgets']) === 5, 'Default configuration must validate.');
 check(Config::decode('broken')['widgets'] === [], 'Malformed stored JSON must have an empty fallback.');
+$validateSetting = static function (mixed $value): void {
+    $settings = ['edgeinfinity-diy-homepage.hero_enabled' => $value];
+    (new EdgeInfinity\DiyHomepage\Listener\ValidateSettings())->handle(new Flarum\Settings\Event\Saving($settings));
+};
+foreach ([true, false, 0, 1, '0', '1', ''] as $value) {
+    $validateSetting($value);
+    check(true, 'Valid page-banner switch value rejected.');
+}
+foreach (['yes', 2, null, []] as $value) {
+    $invalid = false;
+    try { $validateSetting($value); } catch (Flarum\Foundation\ValidationException) { $invalid = true; }
+    check($invalid, 'Invalid page-banner switch value accepted.');
+}
 check(rejected('{'), 'Malformed JSON must be rejected on save.');
 check(rejected(['version' => 2, 'widgets' => []]), 'Unsupported versions must be rejected.');
 $widget = ['id' => 'one', 'type' => 'notice', 'region' => 'main', 'settings' => []];
+foreach (['fullWidth', 'top', 'main', 'sidebar', 'configOnly'] as $region) {
+    $regional = [...$widget, 'region' => $region];
+    check(Config::validate(json_encode(['version' => 1, 'widgets' => [$regional]]))['widgets'][0] === $regional,
+        'All supported regions must preserve widget settings, including configuration-only instances.');
+}
+check(rejected(['version' => 1, 'widgets' => [[...$widget, 'region' => 'hidden']]]), 'Unknown region must be rejected.');
 check(rejected(['version' => 1, 'widgets' => [$widget, $widget]]), 'Duplicate IDs must be rejected.');
 foreach (['javascript:alert(1)', '//evil.example/x', '/\\evil.example', "https://example.org/\nfoo", 'data:image/png;base64,x'] as $url) {
     $bad = $widget;

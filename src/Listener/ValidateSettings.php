@@ -22,9 +22,10 @@ class ValidateSettings
                 throw new ValidationException([$key => $e->getMessage()]);
             }
         }
-        foreach (['guest_home', 'sticky_sidebar', 'hero_show_icon'] as $name) {
+        foreach (['guest_home', 'sticky_sidebar', 'hero_enabled', 'hero_show_icon'] as $name) {
             $key = 'edgeinfinity-diy-homepage.'.$name;
-            if (isset($event->settings[$key]) && ! in_array($event->settings[$key], [true, false, 0, 1, '0', '1', ''], true)) {
+            if (array_key_exists($key, $event->settings)
+                && ! in_array($event->settings[$key], [true, false, 0, 1, '0', '1', ''], true)) {
                 throw new ValidationException([$key => 'Expected a boolean.']);
             }
         }

@@ -50,7 +50,7 @@ class Config
             }
             $ids[] = $widget['id'];
             if (! is_string($widget['type'] ?? null) || ! preg_match('/^[a-zA-Z0-9_.:-]{1,100}$/D', $widget['type'])
-                || ! in_array($widget['region'] ?? null, ['fullWidth', 'top', 'main', 'sidebar'], true)
+                || ! in_array($widget['region'] ?? null, ['fullWidth', 'top', 'main', 'sidebar', 'configOnly'], true)
                 || ! in_array($widget['audience'] ?? 'all', ['all', 'guests', 'members'], true)) {
                 throw new InvalidArgumentException('Invalid widget type, region or audience: '.$widget['id']);
             }

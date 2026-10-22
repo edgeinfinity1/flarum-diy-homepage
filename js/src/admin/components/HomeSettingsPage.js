@@ -9,7 +9,7 @@ import registerFoFWidgets from '../../common/fofBridge';
 import { backgroundPalette, textBlocks, defaultStats, safeColor } from '../../common/presentation';
 
 const key = 'edgeinfinity-diy-homepage.';
-const regions = ['fullWidth', 'top', 'main', 'sidebar'];
+const regions = ['fullWidth', 'top', 'main', 'sidebar', 'configOnly'];
 const audiences = ['all', 'guests', 'members'];
 
 export default class HomeSettingsPage extends ExtensionPage {
@@ -55,6 +55,11 @@ export default class HomeSettingsPage extends ExtensionPage {
 
   heroEditor() {
     return this.section('hero', [
+      m('div.Form-group', m(Switch, {
+        state: !['0', 0, false, ''].includes(this.setting(key + 'hero_enabled')()),
+        onchange: (value) => this.setting(key + 'hero_enabled')(value ? '1' : '0'),
+      }, t('admin.hero_enabled'))),
+      m('p.helpText', t('admin.hero_enabled_help')),
       this.field(t('admin.hero_title'), this.input(this.setting(key + 'hero_title')(), this.setting(key + 'hero_title'), { maxlength: 200 }), t('admin.hero_title_help')),
       this.field(t('admin.hero_subtitle'), m('textarea.FormControl', {
         rows: 3, maxlength: 2000, value: this.setting(key + 'hero_subtitle')() || '',
@@ -105,13 +110,13 @@ export default class HomeSettingsPage extends ExtensionPage {
     ]);
   }
 
-  add() {
+  add(region = null) {
     if (this.config.widgets.length >= 50) return;
     const definition = app.diyHomepage.get(this.newType);
     const widget = {
       id: 'widget-' + Date.now().toString(36),
       type: this.newType,
-      region: this.newType === 'banner' ? 'top' : 'main',
+      region: region || (this.newType === 'banner' ? 'top' : 'main'),
       enabled: true, audience: 'all', title: '', subtitle: '', icon: '',
       settings: JSON.parse(JSON.stringify(definition.defaults || {})),
     };
@@ -166,6 +171,7 @@ export default class HomeSettingsPage extends ExtensionPage {
         m('div.DiyHomeEditor-toolbar', [
           this.select(this.newType, Object.fromEntries(app.diyHomepage.all().map(([id, definition]) => [id, definition.label || id])), (value) => { this.newType = value; }, { 'aria-label': text('admin.widget_type') }),
           m(Button, { className: 'Button Button--primary', icon: 'fas fa-plus', onclick: () => this.add(), disabled: this.config.widgets.length >= 50 }, t('admin.add_widget')),
+          m(Button, { className: 'Button', icon: 'fas fa-plus', onclick: () => this.add('configOnly'), disabled: this.config.widgets.length >= 50 }, t('admin.add_config_only')),
           m('a.Button', { href: app.forum.attribute('baseUrl') + '/home', target: '_blank', rel: 'noopener' }, [
             m(Icon, { name: 'fas fa-arrow-up-right-from-square' }), ' ', t('admin.open_home'),
           ]),
@@ -242,7 +248,7 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.link_url'), this.input(widget.linkUrl, (value) => this.update(widget, 'linkUrl', value), { placeholder: '/all' })),
         ])]),
         this.section('content', (definition?.fields || []).filter((field) => !['links','actions'].includes(field.key)).map((field) => this.settingField(widget, field)), true),
-        ['discussions','users','stats','fof'].includes(widget.type) && this.section('loading', [
+        (['discussions','users','stats','fof'].includes(widget.type) || definition?.loading === true) && this.section('loading', [
           ['discussions','users','stats'].includes(widget.type) && this.field(t('admin.load_mode'), this.select(widget.settings?.loadMode || 'preload', Object.fromEntries(['preload','async'].map((name) => [name, t('admin.load_modes.' + name)])), (value) => this.update(widget, 'loadMode', value, true)), t('admin.load_mode_help')),
           this.field(t('admin.loading_height'), this.number(widget.loadingHeight ?? '', (value) => this.update(widget, 'loadingHeight', value), 0, 3000, 1, text('admin.automatic')), t('admin.loading_height_help')),
           widget.type === 'fof' && m('p.helpText', t('admin.fof_loading_help')),
@@ -265,13 +271,26 @@ export default class HomeSettingsPage extends ExtensionPage {
   }
 
   settingField(widget, field) {
-    const value = widget.settings?.[field.key];
+    const value = widget.settings?.[field.key] ?? field.default;
     const update = (value) => this.update(widget, field.key, value, true);
     const label = typeof field.label === 'function' ? field.label() : field.label;
     let input;
     if (field.type === 'links') return this.linksEditor(widget, field, label);
     if (field.type === 'texts') return this.textsEditor(widget);
     if (field.type === 'stats') return this.statsEditor(widget);
+    if (field.type === 'themeColors') return m('div.DiyHomeEditor-themeColors', [
+      m('h4', label),
+      field.help && m('p.helpText', typeof field.help === 'function' ? field.help() : field.help),
+      m('div.DiyHomeEditor-themeColumns', ['light', 'dark'].map((theme) => m('fieldset.DiyHomeEditor-themeColumn', [
+        m('legend', t('admin.background_themes.' + theme)),
+        this.field(label, m('span.DiyHomeEditor-colorControl', [
+          m('span', { className: 'DiyHomeEditor-colorSwatch' + (safeColor(value?.[theme]) ? '' : ' DiyHomeEditor-colorSwatch--inherit'),
+            style: safeColor(value?.[theme]) ? { backgroundColor: safeColor(value[theme]) } : {}, 'aria-hidden': 'true' }),
+          this.input(value?.[theme] ?? '', (color) => update({ ...(widget.settings?.[field.key] || {}), [theme]: color.trim() }),
+            { maxlength: 9, placeholder: text('admin.theme_default') + ' / #rrggbb' }),
+        ])),
+      ]))),
+    ]);
     if (field.type === 'boolean') return m('div.Form-group', [
       m(Switch, { state: value === undefined ? field.default === true : !!value, onchange: update }, label),
       field.help && m('p.helpText', typeof field.help === 'function' ? field.help() : field.help),
@@ -287,15 +306,17 @@ export default class HomeSettingsPage extends ExtensionPage {
         ...Object.fromEntries(widgets.map((widget) => [widget.id, widget.id])),
       }, update);
     } else {
-      input = this.input(value, (value) => update(field.type === 'number' ? parseInt(value, 10) || 1 : value), {
+      input = this.input(value, (value) => update(field.type === 'number'
+        ? (value === '' ? (field.default ?? field.min ?? 1) : Number(value))
+        : value), {
         type: field.type === 'number' ? 'number' : 'text',
-        ...(field.type === 'number' ? { min: 1, max: 20 } : {}),
+        ...(field.type === 'number' ? { min: field.min ?? 1, max: field.max ?? 20, step: field.step ?? 1 } : {}),
         ...(field.type === 'url' ? { placeholder: '/path or https://…' } : {}),
       });
     }
     const help = field.key === 'ids' && widget.type === 'discussions' ? t('admin.field_help.discussion_ids')
       : ['query', 'ids', 'widgetId', 'imageUrl'].includes(field.key) ? t('admin.field_help.' + field.key) : field.help;
-    return this.field(label, input, help);
+    return this.field(label, input, typeof help === 'function' ? help() : help);
   }
 
   linksEditor(widget, field, label) {

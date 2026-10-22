@@ -48,9 +48,11 @@ Administration · separate light/dark backgrounds
 ## Features
 
 - Four layout regions: full width, upper, main and sidebar, with an optional sticky sidebar and stacked mobile layout.
+- A configuration-only area keeps fully editable widget copies off the homepage while making them available to FoF, with independent content and heading styles.
 - Built-in banners, images, notices, discussions, users, statistics, links and search.
 - Add, duplicate and reorder widgets, choose guest/member audiences, and import or export layouts as JSON.
 - Independent page heading, icon and subtitle; widget backgrounds, gradients, images, text styles and actions with light/dark palettes.
+- A default-on page setting can hide the Flarum banner on discussion index pages and the DIY homepage while leaving navigation and browser-tab titles intact.
 - Flarum's native discussion and user components, with data preloading and the current user's normal visibility rules.
 - Optional two-way FoF Widgets Core bridge: use FoF widgets on the homepage or place homepage widgets in FoF layouts.
 - English and Simplified Chinese translations; light, dark and high-contrast theme support.
@@ -71,7 +73,7 @@ Requires PHP `^8.3` and Flarum `^2.0.2`. FoF Widgets Core is optional. Compiled 
 Install the stable package from [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.1"
+composer require edgeinfinity/diy-homepage:"^0.1.2"
 php flarum cache:clear
 ```
 

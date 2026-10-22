@@ -65,6 +65,32 @@
   &:hover::-webkit-scrollbar-thumb, &:focus-within::-webkit-scrollbar-thumb { background: var(--muted-more-color); }
 }
 
+// FoF's All Discussions sidebar uses the same fixed-width card treatment as
+// the homepage. Reserve the scrollbar outside the card width when the list
+// becomes taller than the viewport, without changing the mobile stack.
+@media (min-width: 992px) {
+  .IndexPage:not(.DiyHomePage) .Page-container > .FofWidgets-sideNavAlt {
+    width: calc(var(--sidebar-width, 180px) + 12px);
+    margin-inline-end: -12px;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+
+    &:hover, &:focus-within {
+      scrollbar-color: var(--diy-home-scrollbar-thumb, var(--muted-more-color)) var(--diy-home-scrollbar-track, transparent);
+    }
+    &::-webkit-scrollbar { width: 8px; }
+    &::-webkit-scrollbar-track { background: transparent; box-shadow: none; }
+    &::-webkit-scrollbar-thumb { background: transparent; box-shadow: none; border-radius: 8px; }
+    &:hover::-webkit-scrollbar-thumb, &:focus-within::-webkit-scrollbar-thumb { background: var(--muted-more-color); }
+
+    > * {
+      width: var(--sidebar-width, 180px);
+      flex: 0 0 auto;
+    }
+  }
+}
+
 .DiyHome-widget {
   margin-bottom: 30px;
   min-width: 0;
@@ -539,6 +565,11 @@
   .DiyHome-more, .DiyHome-readMore {
     display: inline-flex; align-items: center; gap: 0; padding: 3px 5px;
     .icon { margin-left: 1px; }
+  }
+  // Text and the smaller FA glyph must share a baseline, not unequal line-box centers.
+  .DiyHome-more {
+    align-items: baseline;
+    .icon { line-height: inherit; }
   }
 }
 .DiyHome-user { padding: 5px; margin: -5px; }
