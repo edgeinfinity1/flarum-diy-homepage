@@ -32,17 +32,17 @@ The READMEs include [English](../README.md#screenshots) and [Simplified Chinese]
 Install the stable package from Packagist in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.2"
+composer require edgeinfinity/diy-homepage:"^0.1.3"
 php flarum cache:clear
 ```
 
-The `^0.1.2` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
+The `^0.1.3` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
 
 Enable **DIY Homepage** in the administration panel, then open its extension settings. A generic five-widget layout is supplied. Changes to the visual editor take effect after **Save Changes**; reload open forum pages to load the new configuration.
 
 ## Routes and layout
 
-`/home` always opens the homepage. Its navigation item appears before All Discussions. The navigation label, page-hero heading/subtitle and sticky sidebar are configurable. The **Show the top Flarum banner** switch is enabled by default and controls the standard banner on discussion index pages as well as the DIY homepage banner. The hero uses Flarum's `Hero` component and `WelcomeHero` styling. A blank heading falls back to the navigation label; a custom heading does not change the navigation or browser tab title. Its optional heading icon accepts Font Awesome classes (default `fas fa-house`) or an image URL, with a separate visibility switch. Its plain-text subtitle supports line breaks and can be left empty; it is independent of the global welcome message and its dismiss preference.
+`/home` always opens the homepage. Its navigation item appears before All Discussions. The navigation label, page-hero heading/subtitle and sticky sidebar are configurable. The **Show the top Flarum banner** switch is enabled by default and controls only the DIY homepage banner, without affecting All Discussions or other pages. The hero uses Flarum's `Hero` component and `WelcomeHero` styling. A blank heading falls back to the navigation label; a custom heading does not change the navigation or browser tab title. Its optional heading icon accepts Font Awesome classes (default `fas fa-house`) or an image URL, with a separate visibility switch. Its plain-text subtitle supports line breaks and can be left empty; it is independent of the global welcome message and its dismiss preference.
 
 The **Use the homepage as the guest landing page** switch is enabled by default. With Flarum's normal All Discussions default:
 
@@ -172,7 +172,7 @@ The editor can add, duplicate, remove and reorder widgets, move them between reg
 }
 ```
 
-The JSON string is stored in `edgeinfinity-diy-homepage.config`. Other setting suffixes are `guest_home`, `sticky_sidebar`, `nav_label`, `hero_enabled`, `hero_title`, `hero_subtitle`, `hero_show_icon`, `hero_icon` and `hero_icon_image`. The Flarum page banner is enabled by default; switch off **Show the top Flarum banner** to remove it from discussion index pages and the DIY homepage. Navigation and browser-tab titles remain independent. Configuration limits are 128 KiB, 50 widget instances, 20 records/selected IDs per data widget, 20 text blocks and 12 actions/links or statistics per widget. Radius accepts 0–64px or a blank theme default. `titleStyle` accepts `inherit` (also the default when absent), `fof` or `emphasized`; `showExcerpt` must be a boolean when supplied. Instance IDs must be unique and contain at most 64 letters, numbers, underscores or hyphens. Statistics IDs must also be unique within their instance. Keep instance IDs stable: FoF references include them. The schema stays at version 1 and accepts the earlier layout format.
+The JSON string is stored in `edgeinfinity-diy-homepage.config`. Other setting suffixes are `guest_home`, `sticky_sidebar`, `nav_label`, `hero_enabled`, `hero_title`, `hero_subtitle`, `hero_show_icon`, `hero_icon` and `hero_icon_image`. The Flarum page banner is enabled by default; switch off **Show the top Flarum banner** to remove it from the DIY homepage only. All Discussions and other pages keep their own banners. Navigation and browser-tab titles remain independent. Configuration limits are 128 KiB, 50 widget instances, 20 records/selected IDs per data widget, 20 text blocks and 12 actions/links or statistics per widget. Radius accepts 0–64px or a blank theme default. `titleStyle` accepts `inherit` (also the default when absent), `fof` or `emphasized`; `showExcerpt` must be a boolean when supplied. Instance IDs must be unique and contain at most 64 letters, numbers, underscores or hyphens. Statistics IDs must also be unique within their instance. Keep instance IDs stable: FoF references include them. The schema stays at version 1 and accepts the earlier layout format.
 
 Settings saves are restricted by Flarum's normal administration permissions and validated on the server. Disabled widgets and widgets/actions for another audience are removed from the forum payload. Audience controls presentation; providers must still authorize their own data endpoints.
 
@@ -268,7 +268,7 @@ Manage these under **Settings → Secrets and variables → Actions**. Tokens be
 
 1. Update `CHANGELOG.md`, `js/package.json` and the root package version in `js/package-lock.json`. Keep both lockfile version fields consistent. Update installation examples when the supported version range changes.
 2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md), rebuild the frontend if needed, and commit the release changes. Check the installation's guest/member routes, permissions and optional providers when behavior changes.
-3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.3 -m "DIY Homepage 0.1.3"` followed by `git push origin v0.1.3`.
+3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.4 -m "DIY Homepage 0.1.4"` followed by `git push origin v0.1.4`.
 4. Open **Releases → Draft a new release** on GitHub, select that existing tag, add release notes and click **Publish release**. Drafts do not trigger synchronization. Publishing a prerelease also triggers it; the supported tag suffixes are numbered alpha/beta/rc versions such as `v0.2.0-beta.1`.
 5. Check the **Publish to Packagist** workflow and the version on the package page. The workflow reruns the PHP, translation, frontend-build and publication-script checks against the selected tag before requesting an update. It then waits until Packagist's Composer P2 index reports that version at the exact tagged commit. A successful HTTP update request alone does not mark the job successful. The package-details API is cached for up to twelve hours, so the workflow verifies the installation index instead.
 

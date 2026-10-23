@@ -40,11 +40,9 @@ app.initializers.add('edgeinfinity/diy-homepage', () => {
   // Opt in for providers that use onWidgetPage(), but render non-left placements ourselves.
   app.widgets?.addPage(HomePage);
   extend(PageStructure.prototype, 'mainItems', function (items) {
-    const pageClass = this.attrs.className || '';
-    if (app.forum.attribute('diyHomepage.heroEnabled') === false && /\bIndexPage\b/.test(pageClass)) {
-      items.remove('hero');
-    }
     if (app.current.matches(HomePage)) {
+      // The homepage switch must not hide heroes on sibling index/tag pages.
+      if (app.forum.attribute('diyHomepage.heroEnabled') === false) items.remove('hero');
       items.remove('topWidgetSection');
       items.remove('bottomWidgetSection');
     }

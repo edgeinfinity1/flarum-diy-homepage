@@ -95,7 +95,7 @@ edgeinfinity-diy-homepage:
     hero_subtitle: "顶部横幅副标题"
     hero_subtitle_help: "副标题支持换行，留空则不显示。"
     hero_enabled: "显示 Flarum 顶部横幅"
-    hero_enabled_help: "控制讨论列表页和 DIY 首页顶部的横幅，默认显示。"
+    hero_enabled_help: "仅控制 DIY 首页顶部的横幅，默认显示；不影响全部讨论等其它页面。"
     hero_title: "顶部横幅主标题"
     hero_title_help: "留空则使用导航名称，不影响导航与浏览器页签标题。"
     hero_show_icon: "在顶部横幅标题前显示图标"

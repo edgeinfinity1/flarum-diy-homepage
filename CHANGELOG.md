@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.1.3 - 2026-10-23
+
+- Limit the top Flarum banner switch to the DIY homepage. Disabling it no longer hides banners on All Discussions or tag discussion pages, including during SPA navigation.
+- Clarify the homepage-only scope in the English and Simplified Chinese setting help and documentation.
+
 ## 0.1.2 - 2026-10-22
 
 - Add a default-on setting to show or hide the Flarum banner on discussion index pages and the DIY homepage.
