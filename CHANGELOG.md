@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.1.4 - 2026-10-26
+
+- Fix inconsistent discussion/user collection search on refresh by translating native Flarum 2 search gambits into server API filters; queried collections honor the configured preload mode.
+- Keep enable, reorder, duplicate and remove controls visible in collapsed widget headers.
+- Organize widget settings in accessible per-widget tabs, with keyboard navigation and a scrollable strip on narrow screens.
+- Preserve the existing configuration schema and saved values.
+
 ## 0.1.3 - 2026-10-23
 
 - Limit the top Flarum banner switch to the DIY homepage. Disabling it no longer hides banners on All Discussions or tag discussion pages, including during SPA navigation.

@@ -57,6 +57,8 @@
 
   &-widgetBar {
     display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     align-items: center;
     padding: 6px;
     background: var(--control-bg);
@@ -72,6 +74,9 @@
 
     > span {
       flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
@@ -127,14 +132,45 @@
     legend { width: auto; padding: 0 6px; font-size: 14px; font-weight: 600; }
   }
 
-  &-widgetActions {
+  &-widgetControls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 14px;
-    border-top: 1px solid var(--control-bg);
-    padding-top: 14px;
-    margin-top: 12px;
+    gap: 4px;
+    .Checkbox { margin: 0 8px 0 0; padding-right: 0; white-space: nowrap; }
+  }
+
+  &-tabList {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--control-bg);
+    padding: 3px 3px 0;
+  }
+
+  &-tab {
+    flex: 0 0 auto;
+    border: 1px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    background: transparent;
+    color: var(--muted-color);
+    font: inherit;
+    padding: 10px 12px;
+    cursor: pointer;
+    &:hover { background: var(--control-bg); color: var(--text-color); }
+    &[aria-selected=true] {
+      background: var(--control-bg);
+      color: var(--text-color);
+      border-bottom-color: var(--primary-color);
+      font-weight: 600;
+    }
+    &:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+  }
+
+  &-tabPanel {
+    padding-top: 20px;
+    &[hidden] { display: none; }
   }
 
   &-id {
@@ -192,6 +228,10 @@
   }
 
   @media (max-width: 767.98px) {
+    &-toggle { flex-basis: 100%; }
+    &-widgetControls { width: 100%; justify-content: flex-end; }
+    &-widgetControls .Checkbox { margin-right: auto; }
+
     &-fieldGrid, &-themeColumns {
       grid-template-columns: minmax(0, 1fr);
     }

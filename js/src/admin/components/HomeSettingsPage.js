@@ -17,6 +17,7 @@ export default class HomeSettingsPage extends ExtensionPage {
     super.oninit(vnode);
     this.config = parseConfig(this.setting(key + 'config')());
     this.expanded = new Set();
+    this.widgetTabs = new Map();
     this.newType = 'banner';
     this.json = JSON.stringify(this.config, null, 2);
     this.showJson = false;
@@ -147,6 +148,7 @@ export default class HomeSettingsPage extends ExtensionPage {
   remove(widget) {
     this.config.widgets.splice(this.config.widgets.indexOf(widget), 1);
     this.expanded.delete(widget.id);
+    this.widgetTabs.delete(widget.id);
     this.commit();
   }
 
@@ -197,6 +199,7 @@ export default class HomeSettingsPage extends ExtensionPage {
               try {
                 this.config = validConfig(this.json);
                 this.expanded.clear();
+                this.widgetTabs.clear();
                 this.commit();
               } catch (error) {
                 this.jsonError = error.message;
@@ -217,24 +220,31 @@ export default class HomeSettingsPage extends ExtensionPage {
       m('div.DiyHomeEditor-widgetBar', [
         m(Button, {
           className: 'Button Button--text DiyHomeEditor-toggle',
-          'aria-expanded': expanded,
+          'aria-expanded': String(expanded),
+          'aria-controls': 'diy-widget-' + encodeURIComponent(widget.id),
           onclick: () => expanded ? this.expanded.delete(widget.id) : this.expanded.add(widget.id),
         }, [
           m(Icon, { name: widget.icon || definition?.icon || 'fas fa-puzzle-piece' }),
           m('span', widget.title || (definition?.label ? definition.label() : widget.type)),
           m(Icon, { name: expanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }),
         ]),
+        m('div.DiyHomeEditor-widgetControls', [
+          m(Switch, { state: widget.enabled !== false, onchange: (value) => this.update(widget, 'enabled', value) }, t('admin.enabled')),
         m(Button, { className: 'Button Button--icon', icon: 'fas fa-arrow-up', title: text('admin.move_up'), 'aria-label': text('admin.move_up'), disabled: group[0] === widget, onclick: () => this.move(widget, -1) }),
         m(Button, { className: 'Button Button--icon', icon: 'fas fa-arrow-down', title: text('admin.move_down'), 'aria-label': text('admin.move_down'), disabled: group[group.length - 1] === widget, onclick: () => this.move(widget, 1) }),
+          m(Button, { className: 'Button Button--icon', icon: 'far fa-copy', title: text('admin.duplicate'), 'aria-label': text('admin.duplicate'), disabled: this.config.widgets.length >= 50, onclick: () => this.duplicate(widget) }),
+          m(Button, { className: 'Button Button--icon', icon: 'far fa-trash-alt', title: text('admin.remove'), 'aria-label': text('admin.remove'), onclick: () => this.remove(widget) }),
+        ]),
       ]),
-      expanded && m('div.DiyHomeEditor-widgetBody', [
+      expanded && m('div.DiyHomeEditor-widgetBody', { id: 'diy-widget-' + encodeURIComponent(widget.id) }, [
         m('code.DiyHomeEditor-id', widget.id + ' · ' + widget.type),
         !definition && m('p.helpText', t('admin.unavailable_type')),
-        this.section('placement', [m('div.DiyHomeEditor-fieldGrid', [
+        this.widgetTabEditor(widget, [
+        this.widgetSection('placement', [m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.region'), this.select(widget.region, Object.fromEntries(regions.map((key) => [key, t('admin.regions.' + key)])), (value) => this.update(widget, 'region', value))),
           this.field(t('admin.audience'), this.select(widget.audience || 'all', Object.fromEntries(audiences.map((key) => [key, t('admin.audiences.' + key)])), (value) => this.update(widget, 'audience', value))),
         ])], true),
-        this.section('heading', [m('div.DiyHomeEditor-fieldGrid', [
+        this.widgetSection('heading', [m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.title'), this.input(widget.title, (value) => this.update(widget, 'title', value))),
           this.field(t('admin.icon'), this.input(widget.icon, (value) => this.update(widget, 'icon', value), { placeholder: definition?.icon || 'fas fa-house' })),
         ]),
@@ -247,26 +257,61 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.link_label'), this.input(widget.linkLabel, (value) => this.update(widget, 'linkLabel', value))),
           this.field(t('admin.link_url'), this.input(widget.linkUrl, (value) => this.update(widget, 'linkUrl', value), { placeholder: '/all' })),
         ])]),
-        this.section('content', (definition?.fields || []).filter((field) => !['links','actions'].includes(field.key)).map((field) => this.settingField(widget, field)), true),
-        (['discussions','users','stats','fof'].includes(widget.type) || definition?.loading === true) && this.section('loading', [
+        (definition?.fields || []).some((field) => !['links','actions'].includes(field.key)) && this.widgetSection('content', (definition?.fields || []).filter((field) => !['links','actions'].includes(field.key)).map((field) => this.settingField(widget, field)), true),
+        (['discussions','users','stats','fof'].includes(widget.type) || definition?.loading === true) && this.widgetSection('loading', [
           ['discussions','users','stats'].includes(widget.type) && this.field(t('admin.load_mode'), this.select(widget.settings?.loadMode || 'preload', Object.fromEntries(['preload','async'].map((name) => [name, t('admin.load_modes.' + name)])), (value) => this.update(widget, 'loadMode', value, true)), t('admin.load_mode_help')),
           this.field(t('admin.loading_height'), this.number(widget.loadingHeight ?? '', (value) => this.update(widget, 'loadingHeight', value), 0, 3000, 1, text('admin.automatic')), t('admin.loading_height_help')),
           widget.type === 'fof' && m('p.helpText', t('admin.fof_loading_help')),
           widget.type === 'stats' && m(Switch, { state: widget.settings?.animateNumbers !== false, onchange: (value) => this.update(widget, 'animateNumbers', value, true) }, t('admin.animate_numbers')),
         ]),
-        this.section('actions', [
+        (widget.type === 'banner' || (definition?.fields || []).some((field) => ['links','actions'].includes(field.key))) && this.widgetSection('actions', [
           ...(definition?.fields || []).filter((field) => ['links','actions'].includes(field.key)).map((field) => this.settingField(widget, field)),
           widget.type === 'banner' && this.field(t('admin.actions_align'), this.select(widget.settings?.actionsAlign || 'left', this.alignmentOptions(), (value) => this.update(widget, 'actionsAlign', value, true))),
           widget.type === 'banner' && this.field(t('admin.actions_safe_width'), this.number(widget.settings?.actionsSafeWidth ?? '', (value) => this.update(widget, 'actionsSafeWidth', value, true), 1, 100, 1, text('admin.default_safe_width')), t('admin.content_safe_width_help')),
         ]),
         widget.type !== 'fof' && this.backgroundEditor(widget),
         widget.type === 'banner' && this.decorationEditor(widget),
-        m('div.DiyHomeEditor-widgetActions', [
-          m(Switch, { state: widget.enabled !== false, onchange: (value) => this.update(widget, 'enabled', value) }, t('admin.enabled')),
-          m(Button, { className: 'Button Button--text', icon: 'far fa-copy', disabled: this.config.widgets.length >= 50, onclick: () => this.duplicate(widget) }, t('admin.duplicate')),
-          m(Button, { className: 'Button Button--text', icon: 'far fa-trash-alt', onclick: () => this.remove(widget) }, t('admin.remove')),
         ]),
       ]),
+    ]);
+  }
+
+  widgetSection(name, children) {
+    return { name, children };
+  }
+
+  widgetTabEditor(widget, sections) {
+    const available = sections.filter(Boolean);
+    const selected = this.widgetTabs.get(widget.id);
+    const active = available.find((section) => section.name === selected)?.name || available[0].name;
+    const prefix = 'diy-widget-' + encodeURIComponent(widget.id);
+    // UI state stays outside the saved config. Each widget remembers its own
+    // tab while it is collapsed, moved or edited in this settings page.
+    return m('div.DiyHomeEditor-tabs', [
+      m('div.DiyHomeEditor-tabList', { key: 'tablist', role: 'tablist', 'aria-label': text('admin.widget_settings') }, available.map(({ name }, index) =>
+        m('button.DiyHomeEditor-tab', {
+          key: name, type: 'button', role: 'tab', id: prefix + '-tab-' + name,
+          'aria-selected': String(active === name), 'aria-controls': prefix + '-panel-' + name,
+          tabindex: active === name ? 0 : -1,
+          onclick: () => this.widgetTabs.set(widget.id, name),
+          onkeydown: (event) => {
+            const rtl = getComputedStyle(event.currentTarget).direction === 'rtl';
+            const direction = event.key === 'ArrowRight' ? (rtl ? -1 : 1) : event.key === 'ArrowLeft' ? (rtl ? 1 : -1) : 0;
+            let next;
+            if (direction) next = (index + direction + available.length) % available.length;
+            else if (event.key === 'Home') next = 0;
+            else if (event.key === 'End') next = available.length - 1;
+            else return;
+            event.preventDefault();
+            this.widgetTabs.set(widget.id, available[next].name);
+            event.currentTarget.parentElement.querySelectorAll('[role=tab]')[next].focus();
+          },
+        }, t('admin.groups.' + name))
+      )),
+      ...available.map(({ name, children }) => m('div.DiyHomeEditor-tabPanel', {
+        key: name, id: prefix + '-panel-' + name, role: 'tabpanel',
+        'aria-labelledby': prefix + '-tab-' + name, hidden: active !== name, tabindex: 0,
+      }, children)),
     ]);
   }
 
@@ -392,7 +437,7 @@ export default class HomeSettingsPage extends ExtensionPage {
   backgroundEditor(widget) {
     const bg = widget.background || {};
     const update = (key, value) => this.nested(widget, 'background', key, value);
-    return this.section('background', [
+    return this.widgetSection('background', [
       widget.type === 'banner' && this.field(t('admin.fields.imageUrl'), this.input(widget.settings?.imageUrl, (value) => this.update(widget, 'imageUrl', value, true)), t('admin.field_help.imageUrl')),
       this.field(t('admin.background_mode'), this.select(bg.mode || 'theme', Object.fromEntries(['theme','solid','gradient'].map((name) => [name, t('admin.background_modes.' + name)])), (value) => update('mode', value))),
       bg.mode && bg.mode !== 'theme' && m('div.DiyHomeEditor-themeColumns', ['light', 'dark'].map((theme) => {
@@ -417,7 +462,7 @@ export default class HomeSettingsPage extends ExtensionPage {
   decorationEditor(widget) {
     const deco = widget.settings?.decoration || {};
     const update = (key, value) => this.nested(widget, 'decoration', key, value, true);
-    return this.section('decoration', [
+    return this.widgetSection('decoration', [
       m('div.Form-group', m(Switch, { state: deco.enabled !== false, onchange: (value) => update('enabled', value) }, t('admin.decoration.enabled'))),
       deco.enabled !== false && [
         m('div.Form-group', m(Switch, { state: deco.orbits !== false, onchange: (value) => update('orbits', value) }, t('admin.decoration.orbits'))),

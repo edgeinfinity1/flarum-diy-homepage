@@ -70,7 +70,7 @@ edgeinfinity-diy-homepage:
     load_modes:
       preload: "随页面预加载（默认）"
       async: "页面显示后异步加载"
-    load_mode_help: "预加载将数据包含在首页响应中，减少闪烁；复杂查询可能增加页面响应时间。从其它页面切换至首页时使用异步占位。"
+    load_mode_help: "预加载会将数据（包括搜索结果）放入首次页面响应；异步加载则在页面显示后请求数据。两种模式在站内跳转时均使用异步占位加载。"
     loading_height: "加载时预留内容高度（px）"
     loading_height_help: "留空或 0 时按条数估算；FoF 微件会复用同宽度下已测量的高度，首次默认预留 120px。只在加载期间生效。"
     fof_loading_help: "FoF 数据加载由提供方控制；支持预加载的提供方可在 FoF Widgets Core 中开启“随初始页面加载数据”。此处保留其原有组件和权限检查。"
@@ -103,6 +103,7 @@ edgeinfinity-diy-homepage:
     guest_home: "未登录用户访问 / 时显示本首页"
     routes_help: "启用后，访客从 /all 浏览全部讨论；/home 始终指向首页。已登录用户保留论坛原来的默认入口。"
     sticky_sidebar: "桌面端滚动时保持右侧栏可见"
+    widget_settings: 微件配置
     widget_type: "微件类型"
     add_widget: "添加微件"
     add_config_only: "添加到仅配置"

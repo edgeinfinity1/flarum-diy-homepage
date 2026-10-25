@@ -52,7 +52,8 @@
 - 可添加、复制、排序和分组设置微件，支持访客／会员可见范围及 JSON 导入导出。
 - 可独立设置首页标题、图标和副标题；微件支持浅色／深色背景、渐变、图片、文本样式和操作按钮。
 - 后台可关闭默认显示的 DIY 首页的 Flarum 顶部横幅（不影响全部讨论等其它页面），导航名称和浏览器页签标题不受影响。
-- 讨论和用户列表复用 Flarum 原生组件；数据支持预加载，并遵守当前用户的访问权限。
+- 讨论和用户列表复用 Flarum 原生组件；搜索集合支持随页面预加载或异步加载，遵守当前用户的访问权限。
+- 微件收起时仍可启用、排序、复制或删除；展开后通过标签页整理各项配置。
 - 可选的 FoF Widgets Core 双向桥接：在首页使用 FoF 微件，也可将首页微件放入 FoF 布局。
 - “仅配置”区域的微件不在首页展示，仍可供 FoF 引用；复制实例后可独立定制其内容、标题和外观。
 - 内置英文和简体中文翻译，支持浅色、深色及高对比度主题。
@@ -73,7 +74,7 @@
 在 Flarum 根目录从 [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) 安装正式版本：
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.3"
+composer require edgeinfinity/diy-homepage:"^0.1.4"
 php flarum cache:clear
 ```
 

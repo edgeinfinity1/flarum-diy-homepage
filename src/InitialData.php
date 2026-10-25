@@ -6,6 +6,7 @@ use Flarum\Api\Client;
 use Flarum\Extension\ExtensionManager;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
+use Flarum\User\User;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -18,6 +19,7 @@ class InitialData
         private SettingsRepositoryInterface $settings,
         private LoggerInterface $logger,
         private ExtensionManager $extensions,
+        private QueryFilters $queryFilters,
     ) {
     }
 
@@ -36,8 +38,8 @@ class InitialData
                 || !in_array($widget['type'], ['discussions', 'users', 'stats'], true)) continue;
             try {
                 $payload = match ($widget['type']) {
-                    'discussions' => $this->discussions($api, $widget['settings'] ?? []),
-                    'users' => $this->users($api, $widget['settings'] ?? []),
+                    'discussions' => $this->discussions($api, $widget['settings'] ?? [], $actor),
+                    'users' => $this->users($api, $widget['settings'] ?? [], $actor),
                     'stats' => $this->get($api, '/diy-homepage/stats', ['widget' => $widget['id']]),
                 };
                 $data[$widget['id']] = ['type' => $widget['type'], 'payload' => $payload];
@@ -67,7 +69,7 @@ class InitialData
         return max(1, min(20, (int) ($settings['limit'] ?? 5)));
     }
 
-    private function discussions(Client $api, array $settings): array
+    private function discussions(Client $api, array $settings, User $actor): array
     {
         $selected = $this->ids($settings);
         $limit = $this->limit($settings);
@@ -96,11 +98,13 @@ class InitialData
             usort($pinned['data'], static fn ($a, $b) => array_search($a['id'], $selected) <=> array_search($b['id'], $selected));
             $append($pinned);
         }
+        if (trim((string) ($settings['query'] ?? '')) !== '') {
+            $params['filter'] = $this->queryFilters->forQuery('discussions', $settings['query'], $actor);
+        }
         $offset = 0;
         while (count($records) < $limit) {
             $query = $params;
             $query['page'] = ['limit' => $limit + count($records), 'offset' => $offset, 'total' => 0];
-            if (!empty($settings['query'])) $query['filter']['q'] = $settings['query'];
             $payload = $this->get($api, '/discussions', $query);
             $append($payload);
             if (empty($payload['data']) || empty($payload['links']['next'])) break;
@@ -109,7 +113,7 @@ class InitialData
         return ['data' => array_values($records), 'included' => array_values($included)];
     }
 
-    private function users(Client $api, array $settings): array
+    private function users(Client $api, array $settings, User $actor): array
     {
         $selected = array_slice($this->ids($settings), 0, $this->limit($settings));
         if (!$selected) {
@@ -117,7 +121,9 @@ class InitialData
                 'page' => ['limit' => $this->limit($settings), 'total' => 0],
                 'sort' => in_array($settings['sort'] ?? '', ['-joinedAt','-commentCount','-discussionCount'], true) ? $settings['sort'] : '-joinedAt',
             ];
-            if (!empty($settings['query'])) $params['filter']['q'] = $settings['query'];
+            if (trim((string) ($settings['query'] ?? '')) !== '') {
+                $params['filter'] = $this->queryFilters->forQuery('users', $settings['query'], $actor);
+            }
             return $this->get($api, '/users', $params);
         }
         $records = [];

@@ -22,7 +22,8 @@
     "test": [
       "@php tests/config.php",
       "@php tests/middleware.php",
-      "@php tests/resources.php"
+      "@php tests/resources.php",
+      "@php tests/initial-data.php"
     ]
   },
   "extra": {
