@@ -3,6 +3,7 @@
   "version": "0.1.4",
   "private": true,
   "scripts": {
+    "test": "node --test ../tests/frontend.mjs",
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch"
   },

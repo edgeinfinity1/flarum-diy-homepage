@@ -64,7 +64,7 @@ class Config
             }
             self::url($widget['linkUrl'] ?? '');
             self::url($widget['iconImage'] ?? '');
-            self::booleans($widget, ['showIcon', 'showTitle']);
+            self::booleans($widget, ['showIcon', 'showTitle', 'noBottomPadding', 'noBottomMargin']);
             self::number($widget, 'loadingHeight', 0, 3000, true);
             if (isset($widget['titleStyle']) && !in_array($widget['titleStyle'], ['inherit', 'fof', 'emphasized'], true)) {
                 throw new InvalidArgumentException('Invalid widget title style.');
@@ -76,6 +76,10 @@ class Config
             }
             if (isset($settings['loadMode']) && !in_array($settings['loadMode'], ['preload','async'], true)) throw new InvalidArgumentException('Invalid loading mode.');
             self::typography($settings);
+            self::number($settings, 'height', 0, 300);
+            if (isset($settings['dividerStyle']) && !in_array($settings['dividerStyle'], ['line', 'blank'], true)) {
+                throw new InvalidArgumentException('Invalid divider style.');
+            }
             self::number($settings, 'actionsSafeWidth', 1, 100, true);
             self::booleans($settings, ['animateNumbers']);
             if (isset($settings['actionsAlign']) && !in_array($settings['actionsAlign'], ['left','center','right'], true)) {
@@ -123,6 +127,9 @@ class Config
                     if (! in_array($link['audience'] ?? 'all', ['all', 'guests', 'members'], true)) {
                         throw new InvalidArgumentException('Invalid link audience.');
                     }
+                    if (isset($link['style']) && !in_array($link['style'], ['auto', 'primary', 'secondary'], true)) {
+                        throw new InvalidArgumentException('Invalid button style.');
+                    }
                     self::url($link['url'] ?? '');
                     self::url($link['iconImage'] ?? '');
                     self::booleans($link, ['showIcon']);
@@ -137,6 +144,14 @@ class Config
     {
         self::number($settings, 'titleFontSize', 12, 120, true);
         self::fontFamily($settings, 'titleFontFamily');
+        foreach (['statsNumber', 'statsLabel'] as $prefix) {
+            self::number($settings, $prefix.'FontSize', 8, 120, true);
+            self::fontFamily($settings, $prefix.'FontFamily');
+            $weight = $settings[$prefix.'FontWeight'] ?? '';
+            if (!is_string($weight) || !in_array($weight, ['', 'normal', 'bold', '100', '200', '300', '400', '500', '600', '650', '700', '800', '900'], true)) {
+                throw new InvalidArgumentException('Invalid statistics font weight.');
+            }
+        }
     }
 
     private static function fontFamily(array $values, string $key): void

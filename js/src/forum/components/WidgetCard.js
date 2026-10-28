@@ -5,7 +5,7 @@ import Icon from 'flarum/common/components/Icon';
 import WidgetIcon from './WidgetIcon';
 import Background from './Background';
 import { emphasizedTitle, radiusStyle } from '../../common/presentation';
-import { t, widgetTitle, visible, safeUrl, linkAttrs } from '../../common/utils';
+import { t, widgetTitle, visible, safeUrl, linkAttrs, displayText } from '../../common/utils';
 
 export default class WidgetCard extends Component {
   view() {
@@ -14,11 +14,11 @@ export default class WidgetCard extends Component {
     if (!definition?.component || widget.enabled === false || !visible(widget.audience)) return null;
     if (definition.isAvailable && !definition.isAvailable(widget)) return null;
 
-    const standalone = ['banner', 'fof'].includes(widget.type);
+    const standalone = ['banner', 'fof', 'divider'].includes(widget.type);
     const url = safeUrl(widget.linkUrl);
     const emphasized = emphasizedTitle(widget);
     return m('section', {
-      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles'),
+      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (widget.noBottomPadding ? ' DiyHome-widget--noBottomPadding' : '') + (widget.noBottomMargin ? ' DiyHome-widget--noBottomMargin' : '') + (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles'),
       style: { ...radiusStyle(), ...(widget.loadingHeight ? { '--diy-home-loading-height': widget.loadingHeight + 'px' } : {}) },
       'data-home-widget': widget.id,
       'aria-label': widgetTitle(widget),
@@ -29,10 +29,10 @@ export default class WidgetCard extends Component {
             widget.showIcon !== false && m(WidgetIcon, { icon: widget.icon || definition.icon, image: widget.iconImage, className: 'FofWidgets-Widget-title-icon DiyHome-headingIcon' }),
             m('span.FofWidgets-Widget-title-label', widgetTitle(widget)),
           ]),
-          widget.subtitle && m('div.FofWidgets-Widget-title-desc.DiyHome-subtitle', widget.subtitle),
+          widget.subtitle && m('div.FofWidgets-Widget-title-desc.DiyHome-subtitle', displayText(widget.subtitle)),
         ]),
         url && m(Link, { ...linkAttrs(url), className: 'DiyHome-more' }, [
-          widget.linkLabel || t('forum.view_all'), m(Icon, { name: 'fas fa-arrow-right' }),
+          displayText(widget.linkLabel) || t('forum.view_all'), m(Icon, { name: 'fas fa-arrow-right' }),
         ]),
       ]),
       standalone ? m(definition.component, { widget, settings: widget.settings || {} })

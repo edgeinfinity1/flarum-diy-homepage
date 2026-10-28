@@ -19,7 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class TestSettings implements SettingsRepositoryInterface {
     public function __construct(public mixed $enabled) {}
     public function all(): array { return []; }
-    public function get(string $key, mixed $default = null): mixed { return $this->enabled; }
+    public function get(string $key, mixed $default = null): mixed { return $key === 'edgeinfinity-diy-homepage.guest_home' ? $this->enabled : $default; }
     public function set(string $key, mixed $value): void {}
     public function delete(string $keyLike): void {}
 }

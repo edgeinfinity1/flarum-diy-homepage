@@ -12,6 +12,8 @@ import { t, ids, limit } from '../../common/utils';
 import PostExcerpt from './PostExcerpt';
 import CountUp from './CountUp';
 import { defaultStats, statLabel } from '../../common/presentation';
+import { statsFontStyle } from '../../common/widgetOptions';
+import { displayText } from '../../common/utils';
 
 class HomepageDiscussionListItem extends DiscussionListItem {
   oninit(vnode) {
@@ -203,8 +205,8 @@ export class StatsWidget extends DataWidget {
     const status = this.status();
     if (status) return status;
     return m('dl.DiyHome-stats', this.records.map((stat) => m('div', { key: stat.id }, [
-      m('dt', [stat.icon && m(Icon, { name: stat.icon }), stat.label]),
-      m('dd', m(CountUp, { value: stat.count, animate: this.attrs.settings.animateNumbers !== false })),
+      m('dt', { style: statsFontStyle(this.attrs.settings, 'label') }, [stat.icon && m(Icon, { name: stat.icon }), displayText(stat.label)]),
+      m('dd', { style: statsFontStyle(this.attrs.settings, 'number') }, m(CountUp, { value: stat.count, animate: this.attrs.settings.animateNumbers !== false })),
     ])));
   }
 
@@ -214,8 +216,8 @@ export class StatsWidget extends DataWidget {
       && (item.metric !== 'tagDiscussions' || flarum.extensions['flarum-tags']));
     return m('dl.DiyHome-stats.DiyHome-loading', { 'aria-busy': 'true', 'aria-label': t('forum.loading') }, stats.map((item) =>
       m('div', { key: item.id }, [
-        m('dt', [item.icon && m(Icon, { name: item.icon }), statLabel(item)]),
-        m('dd', m('span.DiyHome-skeleton.DiyHome-skeletonNumber', { 'aria-hidden': 'true' }, '\u00a0')),
+        m('dt', { style: statsFontStyle(this.attrs.settings, 'label') }, [item.icon && m(Icon, { name: item.icon }), item.label ? displayText(item.label) : statLabel(item)]),
+        m('dd', { style: statsFontStyle(this.attrs.settings, 'number') }, m('span.DiyHome-skeleton.DiyHome-skeletonNumber', { 'aria-hidden': 'true' }, '\u00a0')),
       ])));
   }
 }

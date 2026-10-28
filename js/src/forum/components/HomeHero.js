@@ -1,7 +1,7 @@
 import app from 'flarum/forum/app';
 import Hero from 'flarum/forum/components/Hero';
 import ItemList from 'flarum/common/utils/ItemList';
-import { text } from '../../common/utils';
+import { text, displayText } from '../../common/utils';
 import WidgetIcon from './WidgetIcon';
 
 export default class HomeHero extends Hero {
@@ -18,9 +18,9 @@ export default class HomeHero extends Hero {
         app.forum.attribute('diyHomepage.heroShowIcon') !== false && m('span.DiyHome-heroIcon', { 'aria-hidden': 'true' }, m(WidgetIcon, {
           icon: app.forum.attribute('diyHomepage.heroIcon'), image: app.forum.attribute('diyHomepage.heroIconImage'),
         })),
-        m('span.DiyHome-heroTitle', title.trim() ? title : app.forum.attribute('diyHomepage.navLabel') || text('forum.home')),
+        m('span.DiyHome-heroTitle', title.trim() ? displayText(title) : app.forum.attribute('diyHomepage.navLabel') || text('forum.home')),
       ]),
-      subtitle.trim() && m('div.Hero-subtitle', subtitle),
+      subtitle.trim() && m('div.Hero-subtitle', displayText(subtitle)),
     ]));
     return items;
   }

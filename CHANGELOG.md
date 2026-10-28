@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Add everyone / disabled / guests-only root homepage modes while preserving existing installations and the /home alias.
+- Support escaped, single-pass display-text variables for usernames, display names and forum text.
+- Add explicit primary/secondary action styles, line/blank divider widgets with normal headings, independent statistics number/label fonts, and optional bottom padding/gap removal.
+- Center title icons and remove ineffective imported-widget and background-image controls; clarify the optional Friends of Flarum Widgets integration.
+- Preserve existing layouts, default button styles, typography and spacing; add server/client regressions and bilingual documentation.
+
+尚未发布：新增首页三态、纯文本变量、按钮色调、分割微件、统计字体和底部间距开关；修复图标对齐并清理无效控件。旧配置兼容，默认外观保持。
+
+
 ## 0.1.4 - 2026-10-26
 
 - Fix inconsistent discussion/user collection search on refresh by translating native Flarum 2 search gambits into server API filters; queried collections honor the configured preload mode.

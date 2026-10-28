@@ -22,6 +22,19 @@ export default class HomeSettingsPage extends ExtensionPage {
     this.json = JSON.stringify(this.config, null, 2);
     this.showJson = false;
     this.jsonError = '';
+    this.initialHomeMode = app.data.settings.default_route === '/home' ? 'enabled'
+      : !['0', 0, false, ''].includes(app.data.settings[key + 'guest_home'] ?? true) ? 'guests' : 'disabled';
+    this.setting(key + 'home_mode', this.initialHomeMode);
+  }
+
+  dirty() {
+    const settings = super.dirty();
+    // Reading an unset option must not submit an empty, invalid mode when an
+    // administrator saves unrelated widget edits on an existing installation.
+    if (!app.data.settings[key + 'home_mode'] && settings[key + 'home_mode'] === this.initialHomeMode) {
+      delete settings[key + 'home_mode'];
+    }
+    return settings;
   }
 
   commit() {
@@ -155,14 +168,17 @@ export default class HomeSettingsPage extends ExtensionPage {
   content() {
     return m('div.ExtensionPage-settings.DiyHomeEditor', m('div.container', [
       m('p.helpText', t('admin.intro')),
+      m('details.DiyHomeEditor-section', [
+        m('summary', t('admin.variables')),
+        m('p.helpText', t('admin.variables_help')),
+        m('p', ['{username}', '{displayName}', '{forumTitle}', '{forumDescription}'].map((name) => m('code', { style: { marginInlineEnd: '1em' } }, name))),
+        m('p.helpText', [t('admin.variables_escape'), ' ', m('code', '{{username}}')]),
+      ]),
       m(Form, { onsubmit: this.saveSettings.bind(this) }, [
         m('div.DiyHomeEditor-settings', [
           this.field(t('admin.nav_label'), this.input(this.setting(key + 'nav_label')(), this.setting(key + 'nav_label'), { maxlength: 80, placeholder: text('lib.home') })),
           this.heroEditor(),
-          m('div.Form-group', m(Switch, {
-            state: this.setting(key + 'guest_home')() !== '0' && !!this.setting(key + 'guest_home')(),
-            onchange: (value) => this.setting(key + 'guest_home')(value ? '1' : '0'),
-          }, t('admin.guest_home'))),
+          this.field(t('admin.home_mode'), this.select(this.setting(key + 'home_mode')() || (app.data.settings.default_route === '/home' ? 'enabled' : !['0', 0, false, ''].includes(this.setting(key + 'guest_home')()) ? 'guests' : 'disabled'), Object.fromEntries(['enabled', 'disabled', 'guests'].map((mode) => [mode, t('admin.home_modes.' + mode)])), this.setting(key + 'home_mode'))),
           m('p.helpText', t('admin.routes_help')),
           m('div.Form-group', m(Switch, {
             state: this.setting(key + 'sticky_sidebar')() !== '0' && !!this.setting(key + 'sticky_sidebar')(),
@@ -244,19 +260,24 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.region'), this.select(widget.region, Object.fromEntries(regions.map((key) => [key, t('admin.regions.' + key)])), (value) => this.update(widget, 'region', value))),
           this.field(t('admin.audience'), this.select(widget.audience || 'all', Object.fromEntries(audiences.map((key) => [key, t('admin.audiences.' + key)])), (value) => this.update(widget, 'audience', value))),
         ])], true),
-        this.widgetSection('heading', [m('div.DiyHomeEditor-fieldGrid', [
+        this.widgetSection('heading', [widget.type !== 'fof' && m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.title'), this.input(widget.title, (value) => this.update(widget, 'title', value))),
           this.field(t('admin.icon'), this.input(widget.icon, (value) => this.update(widget, 'icon', value), { placeholder: definition?.icon || 'fas fa-house' })),
         ]),
         this.field(t('admin.title_style'), this.select(widget.titleStyle || 'inherit', Object.fromEntries(['inherit','fof','emphasized'].map((style) => [style, t('admin.title_styles.' + style)])), (value) => this.update(widget, 'titleStyle', value)), t('admin.title_style_help')),
-        this.field(t('admin.icon_image'), this.input(widget.iconImage, (value) => this.update(widget, 'iconImage', value))),
-        m('div.Form-group', m(Switch, { state: widget.showIcon !== false, onchange: (value) => this.update(widget, 'showIcon', value) }, t('admin.show_icon'))),
-        m('div.Form-group', m(Switch, { state: widget.showTitle !== false, onchange: (value) => this.update(widget, 'showTitle', value) }, t('admin.show_heading'))),
-        this.field(t('admin.subtitle'), this.input(widget.subtitle, (value) => this.update(widget, 'subtitle', value))),
-        m('div.DiyHomeEditor-fieldGrid', [
+        widget.type !== 'fof' && this.field(t('admin.icon_image'), this.input(widget.iconImage, (value) => this.update(widget, 'iconImage', value))),
+        widget.type !== 'fof' && m('div.Form-group', m(Switch, { state: widget.showIcon !== false, onchange: (value) => this.update(widget, 'showIcon', value) }, t('admin.show_icon'))),
+        widget.type !== 'fof' && m('div.Form-group', m(Switch, { state: widget.showTitle !== false, onchange: (value) => this.update(widget, 'showTitle', value) }, t('admin.show_heading'))),
+        widget.type !== 'fof' && this.field(t('admin.subtitle'), this.input(widget.subtitle, (value) => this.update(widget, 'subtitle', value))),
+        widget.type !== 'fof' && m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.link_label'), this.input(widget.linkLabel, (value) => this.update(widget, 'linkLabel', value))),
           this.field(t('admin.link_url'), this.input(widget.linkUrl, (value) => this.update(widget, 'linkUrl', value), { placeholder: '/all' })),
         ])]),
+        this.widgetSection('spacing', [
+          (['banner', 'notice', 'stats', 'links', 'fof'].includes(widget.type) || ['solid', 'gradient'].includes(widget.background?.mode)) && m('div.Form-group', m(Switch, { state: widget.noBottomPadding === true, onchange: (value) => this.update(widget, 'noBottomPadding', value) }, t('admin.no_bottom_padding'))),
+          m('div.Form-group', m(Switch, { state: widget.noBottomMargin === true, onchange: (value) => this.update(widget, 'noBottomMargin', value) }, t('admin.no_bottom_margin'))),
+          m('p.helpText', t('admin.spacing_help')),
+        ]),
         (definition?.fields || []).some((field) => !['links','actions'].includes(field.key)) && this.widgetSection('content', (definition?.fields || []).filter((field) => !['links','actions'].includes(field.key)).map((field) => this.settingField(widget, field)), true),
         (['discussions','users','stats','fof'].includes(widget.type) || definition?.loading === true) && this.widgetSection('loading', [
           ['discussions','users','stats'].includes(widget.type) && this.field(t('admin.load_mode'), this.select(widget.settings?.loadMode || 'preload', Object.fromEntries(['preload','async'].map((name) => [name, t('admin.load_modes.' + name)])), (value) => this.update(widget, 'loadMode', value, true)), t('admin.load_mode_help')),
@@ -269,7 +290,7 @@ export default class HomeSettingsPage extends ExtensionPage {
           widget.type === 'banner' && this.field(t('admin.actions_align'), this.select(widget.settings?.actionsAlign || 'left', this.alignmentOptions(), (value) => this.update(widget, 'actionsAlign', value, true))),
           widget.type === 'banner' && this.field(t('admin.actions_safe_width'), this.number(widget.settings?.actionsSafeWidth ?? '', (value) => this.update(widget, 'actionsSafeWidth', value, true), 1, 100, 1, text('admin.default_safe_width')), t('admin.content_safe_width_help')),
         ]),
-        widget.type !== 'fof' && this.backgroundEditor(widget),
+        !['fof', 'divider'].includes(widget.type) && this.backgroundEditor(widget),
         widget.type === 'banner' && this.decorationEditor(widget),
         ]),
       ]),
@@ -370,6 +391,7 @@ export default class HomeSettingsPage extends ExtensionPage {
     return m('div.DiyHomeEditor-links', [
       m('h4', label),
       links.map((link, index) => m('div.DiyHomeEditor-link', [
+        this.field(t('admin.button_style'), this.select(link.style || 'auto', Object.fromEntries(['auto', 'primary', 'secondary'].map((style) => [style, t('admin.button_styles.' + style)])), (value) => { link.style = value; update(); }), t('admin.button_style_help')),
         this.field(t('admin.fields.action'), this.select(link.action || 'url', Object.fromEntries(['url', 'all', 'compose', 'signup', 'login'].map((key) => [key, t('lib.actions.' + key)])), (value) => { link.action = value; update(); })),
         this.field(t('admin.link_label'), this.input(link.label, (value) => { link.label = value; update(); })),
         (!link.action || link.action === 'url') && this.field(t('admin.link_url'), this.input(link.url, (value) => { link.url = value; update(); })),
@@ -438,7 +460,7 @@ export default class HomeSettingsPage extends ExtensionPage {
     const bg = widget.background || {};
     const update = (key, value) => this.nested(widget, 'background', key, value);
     return this.widgetSection('background', [
-      widget.type === 'banner' && this.field(t('admin.fields.imageUrl'), this.input(widget.settings?.imageUrl, (value) => this.update(widget, 'imageUrl', value, true)), t('admin.field_help.imageUrl')),
+      widget.type === 'banner' && (!bg.mode || bg.mode === 'theme') && this.field(t('admin.fields.imageUrl'), this.input(widget.settings?.imageUrl, (value) => this.update(widget, 'imageUrl', value, true)), t('admin.field_help.imageUrl')),
       this.field(t('admin.background_mode'), this.select(bg.mode || 'theme', Object.fromEntries(['theme','solid','gradient'].map((name) => [name, t('admin.background_modes.' + name)])), (value) => update('mode', value))),
       bg.mode && bg.mode !== 'theme' && m('div.DiyHomeEditor-themeColumns', ['light', 'dark'].map((theme) => {
         const palette = backgroundPalette(bg, theme);
@@ -450,9 +472,9 @@ export default class HomeSettingsPage extends ExtensionPage {
           m('legend', t('admin.background_themes.' + theme)),
           ...['leftColor','rightColor','leftImage','rightImage'].filter((name) => bg.mode === 'gradient' || !name.startsWith('right')).map((name) => this.field(t('admin.background.' + name), this.input(palette[name], (value) => change(name, value), { placeholder: name.includes('Color') ? text('admin.theme_default') + ' / #rrggbb' : '/path or https://…' }))),
           ...(bg.mode === 'gradient' ? [['angle',115,0,360],['position',50,0,100],['width',70,0,100]] : []).map(([name,fallback,min,max]) => this.field(t('admin.background.' + name), this.number(palette[name] ?? fallback, (value) => change(name, value), min, max))),
-          ...[['imageX',50,0,100,1],['imageY',50,0,100,1],['imageOpacity',1,0,1,.05]].map(([name,fallback,min,max,step]) => this.field(t('admin.background.' + name), this.number(palette[name] ?? fallback, (value) => change(name, value), min, max, step))),
-          this.field(t('admin.background.imageFit'), this.select(palette.imageFit || 'cover', { cover: 'cover', contain: 'contain', manual: t('admin.image_fit_manual') }, (value) => change('imageFit', value))),
-          palette.imageFit === 'manual' && this.field(t('admin.background.imageScale'), this.number(palette.imageScale ?? 100, (value) => change('imageScale', value), 1, 500, 1), t('admin.image_scale_help')),
+          ...(palette.leftImage || (bg.mode === 'gradient' && palette.rightImage) ? [['imageX',50,0,100,1],['imageY',50,0,100,1],['imageOpacity',1,0,1,.05]] : []).map(([name,fallback,min,max,step]) => this.field(t('admin.background.' + name), this.number(palette[name] ?? fallback, (value) => change(name, value), min, max, step))),
+          (palette.leftImage || (bg.mode === 'gradient' && palette.rightImage)) && this.field(t('admin.background.imageFit'), this.select(palette.imageFit || 'cover', { cover: 'cover', contain: 'contain', manual: t('admin.image_fit_manual') }, (value) => change('imageFit', value))),
+          (palette.leftImage || (bg.mode === 'gradient' && palette.rightImage)) && palette.imageFit === 'manual' && this.field(t('admin.background.imageScale'), this.number(palette.imageScale ?? 100, (value) => change('imageScale', value), 1, 500, 1), t('admin.image_scale_help')),
         ]);
       })),
       m('p.helpText', t('admin.background_help')),
@@ -481,6 +503,15 @@ export default class HomeSettingsPage extends ExtensionPage {
     const metrics = ['users','discussions','posts','online','recentPosts','recentUsers','recentDiscussions','postType','tagDiscussions'];
     return m('div.DiyHomeEditor-stats', [
       m('p.helpText', t('admin.stats_help')),
+      ...['Number', 'Label'].map((part) => m('fieldset.DiyHomeEditor-statFont', [
+        m('legend', t('admin.stats_font_' + part.toLowerCase())),
+        m('div.DiyHomeEditor-fieldGrid', [
+          this.field(t('admin.font_size'), this.number(widget.settings?.['stats' + part + 'FontSize'] ?? '', (value) => this.update(widget, 'stats' + part + 'FontSize', value, true), 8, 120, 1, text('admin.theme_default'))),
+          this.field(t('admin.font_family'), this.input(widget.settings?.['stats' + part + 'FontFamily'], (value) => this.update(widget, 'stats' + part + 'FontFamily', value, true), { maxlength: 300, placeholder: text('admin.theme_default') })),
+          this.field(t('admin.font_weight'), this.select(widget.settings?.['stats' + part + 'FontWeight'] || '', { '': t('admin.theme_default'), normal: t('admin.font_normal'), bold: t('admin.font_bold'), ...Object.fromEntries(['100','200','300','400','500','600','650','700','800','900'].map((weight) => [weight, weight])) }, (value) => this.update(widget, 'stats' + part + 'FontWeight', value, true))),
+        ]),
+      ])),
+      m('p.helpText', t('admin.stats_font_help')),
       items.map((item, i) => m('details.DiyHomeEditor-row', [
         m('summary', [item.enabled === false ? '○ ' : '● ', item.label || t('admin.metrics.' + item.metric)]),
         m('div.Form-group', m(Switch, { state: item.enabled !== false, onchange: (value) => { item.enabled = value; update(); } }, t('admin.enabled'))),

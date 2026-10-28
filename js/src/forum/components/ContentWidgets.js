@@ -4,7 +4,7 @@ import Link from 'flarum/common/components/Link';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import ActionLink from './ActionLink';
-import { t, safeUrl, linkAttrs } from '../../common/utils';
+import { t, safeUrl, linkAttrs, displayText } from '../../common/utils';
 import { bounded, safeColor, textBlocks, contentWidthStyle } from '../../common/presentation';
 import WidgetIcon from './WidgetIcon';
 import Background from './Background';
@@ -42,7 +42,7 @@ function renderText(block, index, settings = {}) {
     } : {}),
   } }, [
     block.showIcon && m(WidgetIcon, { icon: block.icon, image: block.iconImage }),
-    m('span', block.text),
+    m('span', displayText(block.text)),
   ]);
 }
 
@@ -85,10 +85,10 @@ export class ImageWidget extends Component {
     const image = safeUrl(settings.imageUrl);
     if (!image) return m('p.DiyHome-empty', t('forum.no_image'));
     const url = safeUrl(settings.url);
-    const content = m('img.DiyHome-image', { src: image, alt: settings.alt || '', loading: 'lazy', decoding: 'async' });
+    const content = m('img.DiyHome-image', { src: image, alt: displayText(settings.alt) || '', loading: 'lazy', decoding: 'async' });
     return m('figure.DiyHome-figure', [
       url ? m(Link, linkAttrs(url), content) : content,
-      settings.caption && m('figcaption', settings.caption),
+      settings.caption && m('figcaption', displayText(settings.caption)),
     ]);
   }
 }
@@ -118,7 +118,7 @@ export class SearchWidget extends Component {
   }
 
   view() {
-    const placeholder = this.attrs.settings.placeholder || t('forum.search_placeholder');
+    const placeholder = displayText(this.attrs.settings.placeholder) || t('forum.search_placeholder');
     return m('form.DiyHome-search', {
       onsubmit: (event) => {
         event.preventDefault();
@@ -137,6 +137,16 @@ export class SearchWidget extends Component {
       }),
       m(Button, { type: 'submit', className: 'Button Button--primary', icon: 'fas fa-search', disabled: !this.query.trim() }, t('forum.search')),
     ]);
+  }
+}
+
+export class DividerWidget extends Component {
+  view() {
+    const { settings } = this.attrs;
+    return m('div.DiyHome-divider', {
+      style: { height: bounded(settings.height, 24, 0, 300) + 'px' },
+      ...(settings.dividerStyle === 'blank' ? { 'aria-hidden': 'true' } : {}),
+    }, settings.dividerStyle !== 'blank' && m('hr.DiyHome-dividerLine'));
   }
 }
 

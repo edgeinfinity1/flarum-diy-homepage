@@ -1,5 +1,6 @@
 edgeinfinity-diy-homepage:
   forum:
+    guest: "访客"
     home: "首页"
     community: "我们的社区"
     sidebar: "社区微件"
@@ -36,6 +37,9 @@ edgeinfinity-diy-homepage:
       signup: "加入社区"
       login: "登录"
     widgets:
+      divider:
+        name: "分割 / 空白"
+        title: "分区"
       banner:
         name: "横幅"
         title: "欢迎"
@@ -64,6 +68,31 @@ edgeinfinity-diy-homepage:
         name: "FoF 微件"
         title: "社区微件"
   admin:
+    home_mode: "论坛根路径首页"
+    home_modes:
+      enabled: "启用（所有人）"
+      disabled: "禁用"
+      guests: "仅对未登录用户"
+    variables: "文本变量"
+    variables_help: "下列变量可用于微件标题、副标题、文本块、按钮文字、图片说明和替代文字、搜索提示、统计标签及页面横幅文字。访客的用户名和显示名称为“访客”。只进行一次纯文本替换，未知变量保留；链接、查询、样式、导航名称和第三方微件不替换。"
+    variables_escape: "使用双层花括号可显示变量原文，例如："
+    button_style: "按钮色调"
+    button_styles:
+      auto: "自动（原有外观）"
+      primary: "主色调"
+      secondary: "副色调"
+    button_style_help: "自动保留横幅首个按钮为主色调及原有链接样式。手动选择的色调不会随按钮排序改变。"
+    no_bottom_padding: "禁用内容底部内边距"
+    no_bottom_margin: "禁用此微件下方间距"
+    spacing_help: "两项默认均关闭。内边距控制内容容器底部留白；下方间距控制同一区域内与下一微件的距离。第三方微件需使用标准 FoF 内容容器才可控制内边距。"
+    stats_font_number: "统计数字字体"
+    stats_font_label: "统计标签字体"
+    font_size: "字号（px）"
+    font_family: "字体族"
+    font_weight: "字重"
+    font_normal: "常规"
+    font_bold: "粗体"
+    stats_font_help: "留空保留当前外观：数字 17px/650，标签 12px/常规。两类可分别配置 8–120px。字体需已在站点或设备上可用，不会自动下载。"
     intro: "用可复用的微件搭建首页。保存后，打开首页查看实际效果。"
     nav_label: "导航名称"
     load_mode: "初次打开首页时的数据加载方式"
@@ -101,7 +130,7 @@ edgeinfinity-diy-homepage:
     hero_show_icon: "在顶部横幅标题前显示图标"
     hero_icon_help: "图片优先于图标类名；均留空时不显示。"
     guest_home: "未登录用户访问 / 时显示本首页"
-    routes_help: "启用后，访客从 /all 浏览全部讨论；/home 始终指向首页。已登录用户保留论坛原来的默认入口。"
+    routes_help: "启用时所有人在根路径 / 进入 DIY 首页；仅对未登录时只影响访客。禁用时使用论坛默认页（若默认为 /home 则回退到 /all）。所有模式均可直接访问 /home。现有站点保留此前行为。"
     sticky_sidebar: "桌面端滚动时保持右侧栏可见"
     widget_settings: 微件配置
     widget_type: "微件类型"
@@ -119,7 +148,7 @@ edgeinfinity-diy-homepage:
       top: "横跨中部和右侧区域，保留论坛左侧导航。"
       main: "按下方顺序显示在中央内容流。"
       sidebar: "与全部讨论侧栏等宽；小屏幕时排列在中部内容之后。"
-      configOnly: "此处的微件不会在首页任何位置显示，但可供 FoF 引用。可将首页微件复制到这里，独立定制 FoF 的内容与外观。"
+      configOnly: "保存可复用实例但不在本首页显示。启用 Friends of Flarum Widgets 后，可通过其微件库放到论坛其它页面。"
     empty_region: "此区域暂无微件。"
     region: "所属区域"
     audience: "可见人群"
@@ -145,8 +174,10 @@ edgeinfinity-diy-homepage:
     invalid_config: "请使用 version: 1、最多 50 个微件、不重复的 ID，以及有效的区域和可见人群。"
     unavailable_type: "提供该微件的插件当前不可用，配置仍完整保留。"
     choose_fof: "选择已注册的 FoF 微件…"
-    bridge_help: "已启用的原生微件（包括“仅配置”区域）会出现在 FoF 微件商店中，并保留各实例自己的内容与标题样式。将微件复制到“仅配置”后，即可独立定制 FoF，不影响首页。可见人群限制仍生效；停用微件及导入的 FoF 微件不会导出。"
+    bridge_help: "启用可选的 Friends of Flarum Widgets 扩展后，原生实例会出现在该扩展的微件库中，可放到论坛其它页面。“仅配置”使实例不在本首页显示。受众和启用设置仍然生效。"
     fields:
+      dividerStyle: "分割样式"
+      height: "内容高度（px）"
       eyebrow: "顶部小标题"
       text: "正文"
       imageUrl: "图片地址"
@@ -176,6 +207,8 @@ edgeinfinity-diy-homepage:
       imageUrl: "填写以 / 开头的站内路径，或完整的 http(s) 地址。"
       showExcerpt: "独立于突出首条讨论；关闭时隐藏所有摘要。启用 FoF Synopsis 时，普通摘要沿用其内容、标签设置和用户显示偏好。"
     options:
+      line: "分隔线"
+      blank: "空白"
       latest: "最新回复"
       newest: "最新发布"
       replies: "最多回复"
@@ -190,12 +223,12 @@ edgeinfinity-diy-homepage:
     radius_help: "留空时跟随 Flarum“发起讨论”按钮；0 为直角。应用于原生微件和首页 FoF 标准内容容器。"
     emphasized_titles: "醒目标题"
     title_style: "本微件标题样式"
-    title_style_help: "可单独提高中部标题的对比度；不影响其它微件。FoF 导入微件的标准标题也支持此选择。"
+    title_style_help: "选择标准或强调标题样式。导入的第三方微件由原插件控制标题内容，此处仅调整其标准标题样式。"
     title_styles:
       inherit: "跟随整页外观"
-      fof: "FoF 默认"
+      fof: "标准"
       emphasized: "醒目标题"
-    emphasized_help: "关闭时采用 FoF 默认标题样式；开启时使用较大标题和彩色图标，也同步应用于首页中的 FoF 标题。"
+    emphasized_help: "关闭时使用标准微件标题；开启时使用较大标题及彩色图标，也适用于导入微件的标准标题。"
     icon_image: "图标图片 URL（优先于图标类名）"
     show_icon: "显示前置图标"
     show_heading: "显示微件标题栏"
@@ -222,6 +255,7 @@ edgeinfinity-diy-homepage:
     post_type: "已注册帖子类型（如 comment、discussionRenamed）"
     tag_slug: "标签 slug（需要标签扩展）"
     groups:
+      spacing: "间距"
       loading: "加载与占位"
       hero: "页头横幅"
       appearance: "整页外观"

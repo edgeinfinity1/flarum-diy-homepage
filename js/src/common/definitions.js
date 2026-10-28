@@ -47,6 +47,11 @@ export default function registerBuiltins(registry) {
       defaults: {},
       fields: [field('placeholder')],
     },
+    divider: {
+      icon: 'fas fa-minus',
+      defaults: { dividerStyle: 'line', height: 24 },
+      fields: [field('dividerStyle', 'select', { line: option('line'), blank: option('blank') }), { ...field('height', 'number'), min: 0, max: 300, default: 24 }],
+    },
     fof: {
       icon: 'fas fa-puzzle-piece',
       defaults: { widgetId: '' },

@@ -5,7 +5,9 @@ import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import WidgetIcon from './WidgetIcon';
 import IndexSidebar from 'flarum/forum/components/IndexSidebar';
-import { t, safeUrl, visible, linkAttrs } from '../../common/utils';
+import { t, safeUrl, visible, linkAttrs, displayText } from '../../common/utils';
+
+import { actionClass } from '../../common/widgetOptions';
 
 export default class ActionLink extends Component {
   view() {
@@ -13,9 +15,9 @@ export default class ActionLink extends Component {
     if (!visible(item.audience)) return null;
     const action = item.action || 'url';
     const url = action === 'all' ? app.route('index') : action === 'url' ? safeUrl(item.url) : null;
-    const label = item.label || t('lib.actions.' + action);
+    const label = displayText(item.label) || t('lib.actions.' + action);
     const contents = [item.showIcon !== false && m(WidgetIcon, { icon: item.icon, image: item.iconImage }), m('span', label)];
-    const className = this.attrs.className || 'DiyHome-action';
+    const className = actionClass(item, this.attrs.className || 'DiyHome-action');
 
     if (url) return m(Link, { ...linkAttrs(url), className }, contents);
     if (!['signup', 'login', 'compose'].includes(action)) return null;

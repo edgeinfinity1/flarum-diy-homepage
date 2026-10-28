@@ -44,21 +44,15 @@ Enable **DIY Homepage** in the administration panel, then open its extension set
 
 `/home` always opens the homepage. Its navigation item appears before All Discussions. The navigation label, page-hero heading/subtitle and sticky sidebar are configurable. The **Show the top Flarum banner** switch is enabled by default and controls only the DIY homepage banner, without affecting All Discussions or other pages. The hero uses Flarum's `Hero` component and `WelcomeHero` styling. A blank heading falls back to the navigation label; a custom heading does not change the navigation or browser tab title. Its optional heading icon accepts Font Awesome classes (default `fas fa-house`) or an image URL, with a separate visibility switch. Its plain-text subtitle supports line breaks and can be left empty; it is independent of the global welcome message and its dismiss preference.
 
-The **Use the homepage as the guest landing page** switch is enabled by default. With Flarum's normal All Discussions default:
+The **Forum root homepage** mode (setting suffix home_mode) accepts enabled, disabled and guests. Enabled makes / the DIY homepage for everyone. Guests does so only for signed-out visitors. Disabled uses the configured forum default. If the global default is /home but the mode excludes the actor, / falls back to All Discussions. /home remains directly accessible in every mode; this is an entry-point policy, not an access restriction.
 
-| Visitor | `/` | `/home` | `/all` |
-| --- | --- | --- | --- |
-| Guest, switch enabled | Homepage | Homepage | All Discussions |
-| Signed in | All Discussions | Homepage | All Discussions |
-| Guest, switch disabled | All Discussions | Homepage | All Discussions |
-
-The extension preserves the forum's global default route for signed-in users and for guests when the switch is disabled. If a different default route is configured, that route retains its normal behavior. Do not assign `/home` as the global default if you want a separate signed-in landing page. Avoid enabling two extensions that claim `/home` or independently replace the guest default.
+When home_mode has not been saved, the existing global /home default continues to mean everyone; otherwise the legacy guest_home flag is honored. New installations retain the guest-only default. HTTP middleware, API defaultRoute and canonical URLs share the same policy. No personal user preference or database migration is added.
 
 The `fullWidth` region sits below the hero and spans the left navigation, main and right columns. The existing `top` region, labeled **Upper**, spans the main and right columns. Existing saved `top` widgets keep their placement. On smaller screens the regions stack in `fullWidth`, `top`, `main`, `sidebar` order. Desktop widget widths follow Flarum's sidebar variables. The sticky right column reserves its scrollbar outside the widgets, shows it on hover or keyboard focus, and does not narrow the content when it appears. When FoF Widgets Core places a native homepage widget in All Discussions, the bridge also reserves the scrollbar outside that sidebar's fixed card width. Themes may supply `--diy-home-scrollbar-thumb` and `--diy-home-scrollbar-track` for browsers using standard scrollbar colors, or style the WebKit scrollbar pseudo-elements. The extension uses theme colors and supports light and dark themes.
 
 The page exposes `HomePage.providesIndexSidebar = true` for extensions that opt their existing sidebar controls into additional pages. Daily check-in controls remain the responsibility of their provider; the homepage does not implement rewards or duplicate its actions. FoF news can be placed in `fullWidth` by adding a FoF widget instance, subject to the provider's availability settings.
 
-The **Page appearance** group controls the radius of native surfaces, authored controls and imported FoF standard content containers. Leave the radius blank to use Flarum's `--border-radius`, as used by the Start Discussion button; `0` gives square corners. Avatars, native circular discussion controls and decorative orbit shapes keep their own geometry. **Emphasized headings** is off by default and uses FoF's normal heading style; enabling it applies larger headings and colored icons to native and imported FoF headings. Each widget's **Heading style** can inherit this default or explicitly select **FoF** or **Emphasized**, allowing different styles in the main column and sidebar.
+The **Page appearance** group controls the radius of native surfaces, authored controls and imported FoF standard content containers. Leave the radius blank to use Flarum's `--border-radius`, as used by the Start Discussion button; `0` gives square corners. Avatars, native circular discussion controls and decorative orbit shapes keep their own geometry. **Emphasized headings** is off by default and uses the standard widget heading style; enabling it applies larger headings and colored icons to native and imported FoF headings. Each widget's **Heading style** can inherit this default or explicitly select **Standard** or **Emphasized**, allowing different styles in the main column and sidebar.
 
 ## Built-in widgets
 
@@ -74,6 +68,7 @@ All instances support a region, audience (`all`, `guests`, `members`) and enable
 | `stats` | Individually enabled and ordered totals, online members, recent activity, post-type and tag counts. Counts follow the current actor's visibility. |
 | `links` | A collection of links and actions. |
 | `search` | Discussion search form and configurable placeholder. |
+| `divider` | A horizontal line or blank space, with an optional normal heading. |
 | `fof` | An installed FoF widget selected by its registered ID. |
 
 Discussion filters use the forum's normal search syntax. Additional search operators come from the forum's installed extensions. User search uses the standard users endpoint and requires its normal permissions; selected user IDs use the single-user endpoint. Permission failures produce a local empty/error state instead of exposing protected records.
@@ -174,7 +169,7 @@ The editor can add, duplicate, remove and reorder widgets, move them between reg
 }
 ```
 
-The JSON string is stored in `edgeinfinity-diy-homepage.config`. Other setting suffixes are `guest_home`, `sticky_sidebar`, `nav_label`, `hero_enabled`, `hero_title`, `hero_subtitle`, `hero_show_icon`, `hero_icon` and `hero_icon_image`. The Flarum page banner is enabled by default; switch off **Show the top Flarum banner** to remove it from the DIY homepage only. All Discussions and other pages keep their own banners. Navigation and browser-tab titles remain independent. Configuration limits are 128 KiB, 50 widget instances, 20 records/selected IDs per data widget, 20 text blocks and 12 actions/links or statistics per widget. Radius accepts 0–64px or a blank theme default. `titleStyle` accepts `inherit` (also the default when absent), `fof` or `emphasized`; `showExcerpt` must be a boolean when supplied. Instance IDs must be unique and contain at most 64 letters, numbers, underscores or hyphens. Statistics IDs must also be unique within their instance. Keep instance IDs stable: FoF references include them. The schema stays at version 1 and accepts the earlier layout format.
+The JSON string is stored in `edgeinfinity-diy-homepage.config`. Other setting suffixes are `home_mode` (with legacy `guest_home` fallback), `sticky_sidebar`, `nav_label`, `hero_enabled`, `hero_title`, `hero_subtitle`, `hero_show_icon`, `hero_icon` and `hero_icon_image`. The Flarum page banner is enabled by default; switch off **Show the top Flarum banner** to remove it from the DIY homepage only. All Discussions and other pages keep their own banners. Navigation and browser-tab titles remain independent. Configuration limits are 128 KiB, 50 widget instances, 20 records/selected IDs per data widget, 20 text blocks and 12 actions/links or statistics per widget. Radius accepts 0–64px or a blank theme default. `titleStyle` accepts `inherit` (also the default when absent), `fof` or `emphasized`; `showExcerpt` must be a boolean when supplied. Instance IDs must be unique and contain at most 64 letters, numbers, underscores or hyphens. Statistics IDs must also be unique within their instance. Keep instance IDs stable: FoF references include them. The schema stays at version 1 and accepts the earlier layout format.
 
 Settings saves are restricted by Flarum's normal administration permissions and validated on the server. Disabled widgets and widgets/actions for another audience are removed from the forum payload. Audience controls presentation; providers must still authorize their own data endpoints.
 
@@ -228,6 +223,23 @@ Registry methods are `register(type, definition)`, `get(type)` and `all()` (an a
 
 Fields use `{ key, type, label, options?, help?, default?, min?, max?, step? }`. Supported types: `text`, `textarea`, `url`, `number` (defaults to 1–20, with optional range and step), `boolean`, `select`, `links`, `fof`, `themeColors`, plus the built-in `texts` and `stats` editors. A `themeColors` field edits `{light, dark}` hexadecimal colors, with blank values retaining the provider default; JSON import validates this shape for registered fields. A select's `options` maps values to strings or label functions. Field labels and help may be strings or functions. A boolean field's `default` determines its editor state when the setting is absent; it does not write a value until edited. A links field edits the action/link schema described above. Definitions can set `loading: true` to expose the instance's loading-height editor; the provider must consume `--diy-home-loading-height` while loading. Custom JSON-safe settings are preserved; built-in property names retain their validation rules. Providers should validate their additional options on the server and handle loading, empty and error states in their components. Unregistered types remain in saved configuration and are hidden on the forum until their provider is available.
 
+
+## Text variables, actions and spacing
+
+Display text supports {username}, {displayName}, {forumTitle} and {forumDescription}. Username and display name use the translated Guest label when signed out. Unknown variables are preserved, and double braces ({{username}}) display a literal token. Replacements happen once at render time using the current actor, through normal escaped text nodes; HTML is never interpreted.
+
+Supported fields: native widget title, subtitle and heading-link label; banner/notice text blocks (including legacy text); action labels; image alt text and caption; search placeholder; statistics custom labels; page-banner title and subtitle. URLs, API queries, CSS, navigation labels and imported provider content are outside interpolation.
+
+Each action/link accepts style: auto, primary or secondary. Missing/auto preserves existing classes, including the first banner button being primary. Explicit styles follow the item when reordered. All widgets with editable actions use the same behavior.
+
+A divider uses settings.dividerStyle (line or blank) and settings.height (0–300px, default 24). Its normal heading, subtitle, icon and heading link remain available. Disable its heading for an anonymous separator. Divider background and loading controls are omitted because they do not apply.
+
+Statistics settings accept independent statsNumberFontSize / statsLabelFontSize (8–120px or blank), statsNumberFontFamily / statsLabelFontFamily (existing CSS font stacks, maximum 300 characters), and statsNumberFontWeight / statsLabelFontWeight (normal, bold, or 100–900 in steps of 100, plus 650). Blank preserves 17px/650 numbers and 12px/normal labels; fonts are not downloaded. Placeholders use the same typography as loaded data.
+
+Instance flags noBottomPadding and noBottomMargin are boolean and default to false. The former removes bottom content-surface padding, including standard imported FoF content wrappers, while retaining list-row spacing. The latter removes the space after that widget in its region. Cross-region layout gaps stay unchanged. Provider-specific wrappers remain the provider's responsibility.
+
+The editor hides controls that cannot affect the current widget: imported providers own their title/icon/subtitle/link content, and banner legacy image controls apply only to theme backgrounds. Image positioning/fitting controls appear only when a corresponding background image exists. Saved legacy values are preserved for round-tripping and changing modes later. Optional Friends of Flarum Widgets integration is named explicitly in help text.
+
 ## FoF Widgets Core bridge
 
 Both directions are supported when Widgets Core is enabled:
@@ -243,7 +255,7 @@ The adapter includes a scoped compatibility adjustment for FoF 2.0.2's editor so
 
 From `js/`, run `npm ci` and `npm run build` (or `npm run dev` while developing). Recompile Flarum's frontend assets using the target forum's normal workflow after changing JS or LESS. Rebuild and reload both frontends after registry changes.
 
-From a full source checkout, run `composer install`, `composer validate --strict` and `composer test`. The tests cover configuration validation, guest-route middleware and locale/default resources, without a database. A path installation can use the host forum's dependencies with `FLARUM_VENDOR_DIR=/absolute/path/to/forum/vendor composer test`. Configuration tests alone need no Composer dependencies: `php tests/config.php`.
+From a full source checkout, run `composer install`, `composer validate --strict` and `composer test`. The tests cover configuration validation, three-state/legacy route middleware, and locale/default resources without a database. Run npm test from js/ for plain-text variables, action styles, font fallbacks and client validation. A path installation can use the host forum's dependencies with `FLARUM_VENDOR_DIR=/absolute/path/to/forum/vendor composer test`. Configuration tests alone need no Composer dependencies: `php tests/config.php`.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) and [RELEASING.md](../RELEASING.md) in a full Git checkout for build, CI and release procedures. Development-only files are omitted from distribution archives. Integration review also needs a running forum: guest/member routes, admin saves, data permissions, themes, responsive widths and the optional FoF bridge.
 

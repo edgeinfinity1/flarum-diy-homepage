@@ -1,11 +1,23 @@
 import app from 'flarum/common/app';
 import extractText from 'flarum/common/utils/extractText';
+import { interpolateText } from './textVariables';
 
 export const t = (key, args = {}) => app.translator.trans('edgeinfinity-diy-homepage.' + key, args);
 export const text = (key, args = {}) => extractText(t(key, args));
 export const visible = (audience) => !audience || audience === 'all' || (audience === 'members' ? !!app.session.user : !app.session.user);
+export function displayText(value) {
+  const user = app.session?.user;
+  const guest = text('forum.guest');
+  return interpolateText(value, {
+    username: user?.username() || guest,
+    displayName: user?.displayName() || user?.username() || guest,
+    forumTitle: app.forum.attribute('title') || '',
+    forumDescription: app.forum.attribute('description') || '',
+  });
+}
+
 export function widgetTitle(widget) {
-  if (widget.title) return widget.title;
+  if (widget.title) return displayText(widget.title);
   const definition = app.diyHomepage?.get(widget.type);
   const fallback = definition?.title || definition?.label;
   return typeof fallback === 'function' ? fallback() : fallback || widget.type;
@@ -72,6 +84,9 @@ export function validConfig(value) {
     for (const key of ['title', 'subtitle', 'icon', 'linkLabel', 'linkUrl']) {
       if (widget[key] !== undefined && (typeof widget[key] !== 'string' || widget[key].length > 2000)) throw new Error(text('admin.invalid_config'));
     }
+    for (const flag of ['noBottomPadding', 'noBottomMargin']) {
+      if (widget[flag] !== undefined && typeof widget[flag] !== 'boolean') throw new Error(text('admin.invalid_config'));
+    }
     const settings = widget.settings || {};
     if (typeof settings !== 'object' || Array.isArray(settings)) throw new Error(text('admin.invalid_config'));
     for (const field of app.diyHomepage?.get(widget.type)?.fields || []) {
@@ -82,6 +97,14 @@ export function validConfig(value) {
         || Object.values(colors).some((color) => typeof color !== 'string' || (color !== '' && !/^#(?:[\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i.test(color)))) {
         throw new Error(text('admin.invalid_config'));
       }
+    }
+    if (settings.dividerStyle !== undefined && !['line', 'blank'].includes(settings.dividerStyle)) throw new Error(text('admin.invalid_config'));
+    if (settings.height !== undefined && (settings.height === '' || !['number','string'].includes(typeof settings.height) || !Number.isFinite(Number(settings.height)) || Number(settings.height) < 0 || Number(settings.height) > 300)) throw new Error(text('admin.invalid_config'));
+    for (const prefix of ['statsNumber', 'statsLabel']) {
+      const size = settings[prefix + 'FontSize'], family = settings[prefix + 'FontFamily'], weight = settings[prefix + 'FontWeight'];
+      if (size !== undefined && size !== '' && (!['number', 'string'].includes(typeof size) || !Number.isFinite(Number(size)) || Number(size) < 8 || Number(size) > 120)) throw new Error(text('admin.invalid_config'));
+      if (family !== undefined && (typeof family !== 'string' || family.length > 300 || /[;{}<>\\\u0000-\u001f]/.test(family))) throw new Error(text('admin.invalid_config'));
+      if (weight !== undefined && !['', 'normal', 'bold', '100', '200', '300', '400', '500', '600', '650', '700', '800', '900'].includes(weight)) throw new Error(text('admin.invalid_config'));
     }
     if (!validSafeWidth(settings.actionsSafeWidth)) throw new Error(text('admin.invalid_config'));
     if (settings.texts !== undefined) {
@@ -136,6 +159,7 @@ export function validConfig(value) {
         for (const field of ['label', 'icon', 'url', 'action']) {
           if (link[field] !== undefined && typeof link[field] !== 'string') throw new Error(text('admin.invalid_config'));
         }
+        if (link.style !== undefined && !['auto', 'primary', 'secondary'].includes(link.style)) throw new Error(text('admin.invalid_config'));
         if (link.url && !safeUrl(link.url)) throw new Error(text('admin.invalid_config'));
         if (!['all', 'guests', 'members'].includes(link.audience || 'all')) throw new Error(text('admin.invalid_config'));
       }

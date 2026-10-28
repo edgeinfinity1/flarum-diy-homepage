@@ -48,8 +48,9 @@ Administration · separate light/dark backgrounds
 ## Features
 
 - Four layout regions: full width, upper, main and sidebar, with an optional sticky sidebar and stacked mobile layout.
-- A configuration-only area keeps fully editable widget copies off the homepage while making them available to FoF, with independent content and heading styles.
-- Built-in banners, images, notices, discussions, users, statistics, links and search.
+- A configuration-only area keeps fully editable widget copies off the homepage while making them available to the optional Friends of Flarum Widgets extension for placement on other pages, with independent content and heading styles.
+- Built-in banners, images, notices, discussions, users, statistics, links, search and line/blank dividers.
+- Root homepage modes for everyone, guests only or disabled; plain-text variables, explicit primary/secondary buttons, separate statistics fonts and optional bottom padding/gap removal.
 - Add, duplicate and reorder widgets, choose guest/member audiences, and import or export layouts as JSON.
 - Independent page heading, icon and subtitle; widget backgrounds, gradients, images, text styles and actions with light/dark palettes.
 - A default-on page setting can hide the Flarum banner on the DIY homepage only, without affecting All Discussions or other pages, while leaving navigation and browser-tab titles intact.
@@ -65,6 +66,7 @@ Administration · separate light/dark backgrounds
 | Users | Search-based or selected members, with optional biographies |
 | Statistics | Totals, recent activity, tag discussion counts and permission-controlled online counts |
 | Links, search | Navigation, compose/login actions and discussion search |
+| Divider / spacer | A horizontal separator or blank space, with an optional heading |
 | FoF widget | An installed and enabled FoF widget provider |
 
 ## Installation
@@ -85,13 +87,19 @@ php flarum cache:clear
 3. Choose each widget's region, audience, content and appearance. To show online counts, grant **View online member count (without identities)** on the Permissions page.
 4. Click **Save Changes**, then open `/home`. Reload existing forum tabs to load the new configuration.
 
-`/home` always opens the homepage. **Use the homepage as the guest landing page** is on by default: guests visiting `/` see the homepage, while signed-in users keep the forum's configured default route. With Flarum's normal All Discussions default:
+The **Forum root homepage** setting has three modes. With Flarum's normal All Discussions default:
 
-| Visitor | `/` | `/home` | `/all` |
-| --- | --- | --- | --- |
-| Guest, landing page on | Homepage | Homepage | All Discussions |
-| Signed in | All Discussions | Homepage | All Discussions |
-| Guest, landing page off | All Discussions | Homepage | All Discussions |
+| Mode | Guests visiting / | Members visiting / |
+| --- | --- | --- |
+| Enabled | DIY Homepage | DIY Homepage |
+| Guests only | DIY Homepage | All Discussions |
+| Disabled | All Discussions | All Discussions |
+
+/home always opens DIY Homepage. Other configured forum defaults are retained for users outside the selected audience; a global /home default falls back to /all when this setting excludes that user. Existing installations keep their previous behavior, and new installations default to guests only.
+
+Use {username}, {displayName}, {forumTitle} and {forumDescription} in display text. Visitors receive a translated Guest name. Double braces, such as {{username}}, keep the token literal. Text is escaped by the renderer; variables do not expand in URLs or queries.
+
+Button color defaults to Automatic, preserving existing styling. Divider widgets support a line or blank space, a configurable 0–300px content height, and a normal heading. Statistics labels and numbers have separate font size, family and weight controls. Both bottom-padding and bottom-gap switches are off by default. See the full documentation for the supported text fields and JSON keys.
 
 The online-count permission grants counts only, without access to the online member list. Imported FoF widgets retain their providers' settings and permissions.
 

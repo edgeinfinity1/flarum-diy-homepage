@@ -3,6 +3,7 @@
 namespace EdgeInfinity\DiyHomepage\Api;
 
 use EdgeInfinity\DiyHomepage\Config;
+use EdgeInfinity\DiyHomepage\HomeMode;
 use EdgeInfinity\DiyHomepage\Stats;
 use Flarum\Api\Context;
 use Flarum\Api\Schema\Arr;
@@ -19,10 +20,10 @@ class ForumFields
     public function __invoke(): array
     {
         return [
+            Str::make('diyHomepage.homeMode')->get(fn () => HomeMode::mode($this->settings)),
             Boolean::make('diyHomepage.canViewOnlineCount')->get(fn ($model, Context $context) => Stats::canViewOnline($context->getActor())),
             Str::make('defaultRoute')->get(fn ($model, Context $context) =>
-                $context->getActor()->isGuest() && (bool) $this->settings->get('edgeinfinity-diy-homepage.guest_home', true)
-                    ? '/home' : $this->settings->get('default_route')
+                HomeMode::defaultRoute($this->settings, $context->getActor()->isGuest())
             ),
             Arr::make('diyHomepage.config')->get(function ($model, Context $context) {
                 $config = Config::decode($this->settings->get('edgeinfinity-diy-homepage.config'));

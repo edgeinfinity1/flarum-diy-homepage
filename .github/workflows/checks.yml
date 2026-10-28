@@ -50,6 +50,7 @@ jobs:
           cache: npm
           cache-dependency-path: js/package-lock.json
       - run: npm ci
+      - run: npm test
       - run: npm run build
       - name: Check committed frontend assets
         run: git diff --exit-code -- dist

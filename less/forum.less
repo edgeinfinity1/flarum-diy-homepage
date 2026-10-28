@@ -688,3 +688,24 @@
   min-height: var(--diy-home-loading-height, 120px);
   background: var(--control-bg);
 }
+
+// Align the glyph's box with the title, without changing heading size or spacing.
+.DiyHome-widget .FofWidgets-Widget-title {
+  display: flex;
+  align-items: center;
+  .FofWidgets-Widget-title-icon { flex: 0 0 auto; line-height: 1; margin-top: 0; }
+  .FofWidgets-Widget-title-label { min-width: 0; }
+}
+.DiyHome-hero .Hero-title { display: flex; justify-content: center; align-items: center; }
+.DiyHome-heroIcon { flex: 0 0 auto; display: inline-flex; align-items: center; }
+.DiyHome-divider { display: flex; align-items: center; }
+.DiyHome-dividerLine { width: 100%; margin: 0; border: 0; border-top: 1px solid var(--control-bg); }
+.DiyHome-widget.DiyHome-widget--noBottomMargin { margin-bottom: 0; }
+// Only the selected widget's surface padding is removed; list-row spacing remains intact.
+.DiyHome-widget--noBottomPadding {
+  > .DiyHome-banner, > .DiyHome-widgetContent,
+  > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-notice,
+  > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-links,
+  > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-stats,
+  > .DiyHome-fof .FofWidgets-Widget-content { padding-bottom: 0; }
+}

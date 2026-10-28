@@ -22,6 +22,11 @@ class ValidateSettings
                 throw new ValidationException([$key => $e->getMessage()]);
             }
         }
+        $modeKey = 'edgeinfinity-diy-homepage.home_mode';
+        if (array_key_exists($modeKey, $event->settings)
+            && !in_array($event->settings[$modeKey], ['enabled', 'disabled', 'guests'], true)) {
+            throw new ValidationException([$modeKey => 'Choose enabled, disabled or guests.']);
+        }
         foreach (['guest_home', 'sticky_sidebar', 'hero_enabled', 'hero_show_icon'] as $name) {
             $key = 'edgeinfinity-diy-homepage.'.$name;
             if (array_key_exists($key, $event->settings)

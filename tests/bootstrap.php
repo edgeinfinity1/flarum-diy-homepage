@@ -9,3 +9,8 @@ if (!is_file($autoload)) {
     exit(1);
 }
 require_once $autoload;
+
+// Test this checkout even when dependencies come from an older path installation.
+$candidateLoader = new Composer\Autoload\ClassLoader();
+$candidateLoader->addPsr4('EdgeInfinity\\DiyHomepage\\', __DIR__.'/../src');
+$candidateLoader->register(true);
