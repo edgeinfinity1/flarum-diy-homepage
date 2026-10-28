@@ -118,7 +118,7 @@ export class SearchWidget extends Component {
   }
 
   view() {
-    const placeholder = displayText(this.attrs.settings.placeholder) || t('forum.search_placeholder');
+    const placeholder = this.attrs.settings.placeholder ? displayText(this.attrs.settings.placeholder) : t('forum.search_placeholder');
     return m('form.DiyHome-search', {
       onsubmit: (event) => {
         event.preventDefault();

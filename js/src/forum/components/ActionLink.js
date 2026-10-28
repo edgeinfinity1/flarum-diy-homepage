@@ -15,7 +15,7 @@ export default class ActionLink extends Component {
     if (!visible(item.audience)) return null;
     const action = item.action || 'url';
     const url = action === 'all' ? app.route('index') : action === 'url' ? safeUrl(item.url) : null;
-    const label = displayText(item.label) || t('lib.actions.' + action);
+    const label = item.label ? displayText(item.label) : t('lib.actions.' + action);
     const contents = [item.showIcon !== false && m(WidgetIcon, { icon: item.icon, image: item.iconImage }), m('span', label)];
     const className = actionClass(item, this.attrs.className || 'DiyHome-action');
 

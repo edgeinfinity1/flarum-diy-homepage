@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Support per-token JSON-string defaults such as `{username, "Guest"}`, preserving legacy guest labels, literal escaping and single-pass plain-text rendering.
+
 - Add everyone / disabled / guests-only root homepage modes while preserving existing installations and the /home alias.
 - Support escaped, single-pass display-text variables for usernames, display names and forum text.
 - Add explicit primary/secondary action styles, line/blank divider widgets with normal headings, independent statistics number/label fonts, and optional bottom padding/gap removal.

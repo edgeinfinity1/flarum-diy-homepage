@@ -32,7 +32,7 @@ export default class WidgetCard extends Component {
           widget.subtitle && m('div.FofWidgets-Widget-title-desc.DiyHome-subtitle', displayText(widget.subtitle)),
         ]),
         url && m(Link, { ...linkAttrs(url), className: 'DiyHome-more' }, [
-          displayText(widget.linkLabel) || t('forum.view_all'), m(Icon, { name: 'fas fa-arrow-right' }),
+          widget.linkLabel ? displayText(widget.linkLabel) : t('forum.view_all'), m(Icon, { name: 'fas fa-arrow-right' }),
         ]),
       ]),
       standalone ? m(definition.component, { widget, settings: widget.settings || {} })

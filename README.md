@@ -99,6 +99,8 @@ The **Forum root homepage** setting has three modes. With Flarum's normal All Di
 
 Use {username}, {displayName}, {forumTitle} and {forumDescription} in display text. Visitors receive a translated Guest name. Double braces, such as {{username}}, keep the token literal. Text is escaped by the renderer; variables do not expand in URLs or queries.
 
+Add a per-use default with `{username, "Guest"}` or `{forumDescription, "Welcome"}`. It is used when that known value is missing or empty; `{username, ""}` is allowed. Use a double-quoted JSON string. Unknown names or malformed syntax stay literal, and defaults are never expanded again. Existing tokens without defaults retain their behavior.
+
 Button color defaults to Automatic, preserving existing styling. Divider widgets support a line or blank space, a configurable 0–300px content height, and a normal heading. Statistics labels and numbers have separate font size, family and weight controls. Both bottom-padding and bottom-gap switches are off by default. See the full documentation for the supported text fields and JSON keys.
 
 The online-count permission grants counts only, without access to the online member list. Imported FoF widgets retain their providers' settings and permissions.

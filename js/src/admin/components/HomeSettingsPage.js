@@ -172,6 +172,8 @@ export default class HomeSettingsPage extends ExtensionPage {
         m('summary', t('admin.variables')),
         m('p.helpText', t('admin.variables_help')),
         m('p', ['{username}', '{displayName}', '{forumTitle}', '{forumDescription}'].map((name) => m('code', { style: { marginInlineEnd: '1em' } }, name))),
+        m('p.helpText', t('admin.variables_defaults')),
+        m('p', [m('code', '{username, "Guest"}'), ' / ', m('code', '{forumDescription, ""}')]),
         m('p.helpText', [t('admin.variables_escape'), ' ', m('code', '{{username}}')]),
       ]),
       m(Form, { onsubmit: this.saveSettings.bind(this) }, [

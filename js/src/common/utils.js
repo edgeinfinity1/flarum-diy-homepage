@@ -9,11 +9,11 @@ export function displayText(value) {
   const user = app.session?.user;
   const guest = text('forum.guest');
   return interpolateText(value, {
-    username: user?.username() || guest,
-    displayName: user?.displayName() || user?.username() || guest,
+    username: user?.username(),
+    displayName: user?.displayName(),
     forumTitle: app.forum.attribute('title') || '',
     forumDescription: app.forum.attribute('description') || '',
-  });
+  }, { username: guest, displayName: user?.username() || guest });
 }
 
 export function widgetTitle(widget) {

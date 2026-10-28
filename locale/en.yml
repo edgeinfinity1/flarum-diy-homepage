@@ -75,6 +75,7 @@ edgeinfinity-diy-homepage:
       guests: "Guests only"
     variables: "Text variables"
     variables_help: "Use the variables below in widget titles, subtitles, text blocks, button labels, image captions/alt text, search placeholders, statistics labels and page banner text. Username and display name become Guest for visitors. Values render as plain text, once; unknown variables are preserved. URLs, queries, styles, navigation labels and third-party widgets are not expanded."
+    variables_defaults: "Defaults use a double-quoted JSON string after a comma. They apply only when a known value is missing or empty; an empty string is allowed. Existing variables without defaults retain their behavior. Unknown names or malformed syntax remain unchanged. Defaults are plain text and are not expanded again."
     variables_escape: "Double the braces to display a variable literally, for example:"
     button_style: "Button color"
     button_styles:

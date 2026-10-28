@@ -228,6 +228,11 @@ Fields use `{ key, type, label, options?, help?, default?, min?, max?, step? }`.
 
 Display text supports {username}, {displayName}, {forumTitle} and {forumDescription}. Username and display name use the translated Guest label when signed out. Unknown variables are preserved, and double braces ({{username}}) display a literal token. Replacements happen once at render time using the current actor, through normal escaped text nodes; HTML is never interpreted.
 
+
+A per-use default can be written as `{username, "Guest"}` or `{forumDescription, "Welcome to our community"}`. Defaults apply to known variables whose raw value is missing, null or an empty string. A signed-out user has no username/display name, so the explicit default takes precedence over the translated Guest label; without a default, the existing Guest/display-name-to-username fallback remains. Non-empty values (including whitespace, zero or false) are kept. `{username, ""}` allows an empty result.
+
+The default must be a JSON double-quoted string, with optional spaces/tabs around the name and comma. JSON escapes such as `\"`, `\\`, `\n` and `\uXXXX` are supported; commas and braces inside the quoted string are ordinary text. Single quotes, bare values, expressions and nested variables are not supported. Unknown variables and malformed tokens remain visible unchanged. `{{username, "Guest"}}` displays `{username, "Guest"}` literally. Defaults and resolved values are never interpolated again or interpreted as HTML.
+
 Supported fields: native widget title, subtitle and heading-link label; banner/notice text blocks (including legacy text); action labels; image alt text and caption; search placeholder; statistics custom labels; page-banner title and subtitle. URLs, API queries, CSS, navigation labels and imported provider content are outside interpolation.
 
 Each action/link accepts style: auto, primary or secondary. Missing/auto preserves existing classes, including the first banner button being primary. Explicit styles follow the item when reordered. All widgets with editable actions use the same behavior.
