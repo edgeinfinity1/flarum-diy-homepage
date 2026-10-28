@@ -32,11 +32,11 @@ The READMEs include [English](../README.md#screenshots) and [Simplified Chinese]
 Install the stable package from Packagist in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.4"
+composer require edgeinfinity/diy-homepage:"^0.1.5"
 php flarum cache:clear
 ```
 
-The `^0.1.4` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
+The `^0.1.5` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
 
 Enable **DIY Homepage** in the administration panel, then open its extension settings. A generic five-widget layout is supplied. Changes to the visual editor take effect after **Save Changes**; reload open forum pages to load the new configuration.
 
@@ -264,7 +264,7 @@ From a full source checkout, run `composer install`, `composer validate --strict
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) and [RELEASING.md](../RELEASING.md) in a full Git checkout for build, CI and release procedures. Development-only files are omitted from distribution archives. Integration review also needs a running forum: guest/member routes, admin saves, data permissions, themes, responsive widths and the optional FoF bridge.
 
-No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. Version 0.1.2 has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment.
+No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. Version 0.1.5 has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment.
 
 ## Publishing releases and Packagist automation
 
@@ -287,7 +287,7 @@ Manage these under **Settings → Secrets and variables → Actions**. Tokens be
 
 1. Update `CHANGELOG.md`, `js/package.json` and the root package version in `js/package-lock.json`. Keep both lockfile version fields consistent. Update installation examples when the supported version range changes.
 2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md), rebuild the frontend if needed, and commit the release changes. Check the installation's guest/member routes, permissions and optional providers when behavior changes.
-3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.5 -m "DIY Homepage 0.1.5"` followed by `git push origin v0.1.5`.
+3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.6 -m "DIY Homepage 0.1.6"` followed by `git push origin v0.1.6`.
 4. Open **Releases → Draft a new release** on GitHub, select that existing tag, add release notes and click **Publish release**. Drafts do not trigger synchronization. Publishing a prerelease also triggers it; the supported tag suffixes are numbered alpha/beta/rc versions such as `v0.2.0-beta.1`.
 5. Check the **Publish to Packagist** workflow and the version on the package page. The workflow reruns the PHP, translation, frontend-build and publication-script checks against the selected tag before requesting an update. It then waits until Packagist's Composer P2 index reports that version at the exact tagged commit. A successful HTTP update request alone does not mark the job successful. The package-details API is cached for up to twelve hours, so the workflow verifies the installation index instead.
 
