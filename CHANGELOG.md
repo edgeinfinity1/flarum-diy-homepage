@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.7 - 2026-10-30
 
 - Keep FoF heading style independent of heading override: standard, emphasized and page-inherited appearance remain available while provider content and layout are preserved.
 
