@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Keep FoF heading style independent of heading override: standard, emphasized and page-inherited appearance remain available while provider content and layout are preserved.
+
+FoF 标题样式独立于覆盖开关；关闭覆盖仍可设置标准、醒目或跟随整页外观，保留提供方内容与排版。
+
 ## 0.1.6 - 2026-10-29
 
 - Preserve imported FoF heading markup and styles by default, including provider subtitles; scope icon alignment to DIY-authored headings.

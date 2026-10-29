@@ -125,6 +125,17 @@
   .FofWidgets-Widget-title-desc { color: var(--muted-color); font-size: 12px; font-weight: normal; }
 }
 
+// Heading appearance is independent of replacing a provider's content/layout.
+// Only the root standard FoF heading participates; nested content titles and
+// other placements remain untouched. Preserve native display, flow and spacing.
+.DiyHome-widget--emphasized > .DiyHome-fof--nativeHeading > .FofWidgets-Widget > .FofWidgets-Widget-title {
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--text-color);
+  > .FofWidgets-Widget-title-icon { color: var(--primary-color); font-size: .9em; }
+  > .FofWidgets-Widget-title-desc { color: var(--muted-color); font-size: 12px; font-weight: normal; }
+}
+
 .DiyHome-more {
   flex-shrink: 0;
   max-width: 50%;

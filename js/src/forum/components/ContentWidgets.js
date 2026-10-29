@@ -200,7 +200,7 @@ export class FoFWidget extends Component {
     const adapted = config.overrideHeading === true ? withFofHeading(widget.component, renderFofHeading) : null;
     const fallback = config.overrideHeading === true && !adapted;
     return m('div.DiyHome-fof', {
-      className: fallback ? 'DiyHome-fof--overrideHeading' : '',
+      className: fallback ? 'DiyHome-fof--overrideHeading' : config.overrideHeading === true ? '' : 'DiyHome-fof--nativeHeading',
       style: { '--diy-home-loading-height': (Number(config.loadingHeight) || savedProviderHeight(this.attrs)) + 'px' },
     }, [
       fallback && m(WidgetHeading, { widget: config }),

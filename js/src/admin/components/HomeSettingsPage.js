@@ -273,7 +273,7 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.title'), this.input(widget.title, (value) => this.update(widget, 'title', value))),
           this.field(t('admin.icon'), this.input(widget.icon, (value) => this.update(widget, 'icon', value), { placeholder: definition?.icon || 'fas fa-house' })),
         ]),
-        ownsHeading && this.field(t('admin.title_style'), this.select(widget.titleStyle || 'inherit', Object.fromEntries(['inherit','fof','emphasized'].map((style) => [style, t('admin.title_styles.' + style)])), (value) => this.update(widget, 'titleStyle', value)), t('admin.title_style_help')),
+        this.field(t('admin.title_style'), this.select(widget.titleStyle || 'inherit', Object.fromEntries(['inherit','fof','emphasized'].map((style) => [style, t('admin.title_styles.' + style)])), (value) => this.update(widget, 'titleStyle', value)), t('admin.title_style_help')),
         ownsHeading && this.field(t('admin.icon_image'), this.input(widget.iconImage, (value) => this.update(widget, 'iconImage', value))),
         ownsHeading && m('div.Form-group', m(Switch, { state: widget.showIcon !== false, onchange: (value) => this.update(widget, 'showIcon', value) }, t('admin.show_icon'))),
         ownsHeading && m('div.Form-group', m(Switch, { state: widget.showTitle !== false, onchange: (value) => this.update(widget, 'showTitle', value) }, t('admin.show_heading'))),

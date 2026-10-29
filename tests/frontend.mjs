@@ -7,7 +7,7 @@ const load=async name=>import('data:text/javascript;base64,'+Buffer.from(source(
 const {interpolateText}=await load('textVariables.js');
 const {actionClass,statsFontStyle}=await load('widgetOptions.js');
 const app={session:{user:null},forum:{attribute:key=>({title:'Forum',description:'Description'})[key]},translator:{trans:key=>key},diyHomepage:{get:()=>null}};
-const utils=new Function('app','extractText','interpolateText',source('utils.js').replace(/^import .*;\n/gm,'').replaceAll('export ','')+'\nreturn {validConfig,displayText};')(app,x=>String(x),interpolateText);
+const utils=new Function('app','extractText','interpolateText','window',source('utils.js').replace(/^import .*;\n/gm,'').replaceAll('export ','')+'\nreturn {validConfig,displayText};')(app,x=>String(x),interpolateText,{location:{origin:'https://example.test',href:'https://example.test/'}});
 test('variables are single pass, literal-safe, own-property only and preserve unknown names',()=>{
   assert.equal(interpolateText('Hi {username} / {displayName}',{username:'Alice',displayName:'艾丽丝'}),'Hi Alice / 艾丽丝');
   assert.equal(interpolateText('{{username}} {unknown} {constructor}',{username:'Alice'}),'{username} {unknown} {constructor}');
@@ -105,4 +105,34 @@ test('FoF override validates and survives JSON round trips',()=>{
   const config=value=>JSON.stringify({version:1,widgets:[{id:'fof',type:'fof',region:'main',overrideHeading:value,title:'Saved',settings:{widgetId:'provider:widget'}}]});
   for(const value of [true,false]) {const parsed=utils.validConfig(config(value));assert.equal(parsed.widgets[0].overrideHeading,value);assert.equal(parsed.widgets[0].title,'Saved');}
   for(const value of ['true',1,{},[]])assert.throws(()=>utils.validConfig(config(value)));
+});
+
+
+test('rendered widget heading style is independent of FoF override and honors page defaults',()=>{
+  const originalAttribute=app.forum.attribute,originalGet=app.diyHomepage.get;
+  let config={version:1,appearance:{emphasizedTitles:false},widgets:[]};
+  app.forum.attribute=key=>key==='diyHomepage.config'?JSON.stringify(config):originalAttribute(key);
+  const presentation=new Function('app','parseConfig',source('presentation.js').replace(/^import .*;\n/gm,'').replaceAll('export ','')+'\nreturn {emphasizedTitle,radiusStyle};')(app,JSON.parse);
+  const Card=new Function('app','Component','Background','WidgetHeading','emphasizedTitle','radiusStyle','widgetTitle','visible','m',
+    source('../forum/components/WidgetCard.js').replace(/^import .*;\n/gm,'').replace('export default class WidgetCard','class WidgetCard')+'\nreturn WidgetCard;')(
+      app,class {},{}, {},presentation.emphasizedTitle,presentation.radiusStyle,w=>w.title||w.id,()=>true,(tag,attrs,children)=>({tag,attrs,children}));
+  app.diyHomepage.get=()=>({component:{}});
+  try {
+    for(const type of ['fof','stats'])for(const pageDefault of [false,true])for(const overrideHeading of [undefined,false,true])for(const titleStyle of [undefined,'inherit','fof','emphasized']){
+      config.appearance.emphasizedTitles=pageDefault;
+      const widget={id:'sample',type,overrideHeading,titleStyle},card=new Card();card.attrs={widget};
+      const rendered=card.view(),expected=titleStyle==='emphasized'||(titleStyle!=='fof'&&pageDefault);
+      assert.equal(rendered.attrs.className.includes('DiyHome-widget--emphasized'),expected,JSON.stringify({type,pageDefault,overrideHeading,titleStyle}));
+      assert.equal(rendered.attrs.className.includes('DiyHome-widget--fofTitles'),!expected);
+      if(type==='fof')assert.equal(rendered.children[0],false,'style alone must not create a replacement heading');
+    }
+  }finally{app.forum.attribute=originalAttribute;app.diyHomepage.get=originalGet;}
+});
+
+test('FoF style and saved override content survive configuration round trips independently',()=>{
+  for(const overrideHeading of [false,true])for(const titleStyle of ['inherit','fof','emphasized']){
+    const widget={id:'sample',type:'fof',region:'main',overrideHeading,titleStyle,title:'Saved title',subtitle:'Saved subtitle',linkUrl:'/all',settings:{widgetId:'provider:widget'}};
+    const parsed=utils.validConfig(JSON.stringify({version:1,widgets:[widget]}));
+    assert.deepEqual(parsed.widgets[0],widget);
+  }
 });

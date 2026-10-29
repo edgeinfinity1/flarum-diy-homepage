@@ -115,4 +115,4 @@ The online-count permission grants counts only, without access to the online mem
 
 [MIT](LICENSE).
 
-Imported FoF headings keep their original markup and styling by default. Enable **Heading and navigation link → Enable override** to customize the title, subtitle, icon, link, visibility and style for that homepage instance; other FoF placements are unaffected. Collapsed editors show the registered provider ID.
+Imported FoF headings keep their original content and layout by default. **Heading style** always applies to standard FoF headings, independently of **Enable override**. Enable **Heading and navigation link → Enable override** to customize the title, subtitle, icon, link and visibility using the homepage heading layout for that instance. Other FoF placements stay unchanged. Collapsed FoF editor rows also show the concrete registered widget ID.

@@ -13,10 +13,9 @@ export default class WidgetCard extends Component {
     if (definition.isAvailable && !definition.isAvailable(widget)) return null;
 
     const standalone = ['banner', 'fof', 'divider'].includes(widget.type);
-    const ownsHeading = widget.type !== 'fof' || widget.overrideHeading === true;
-    const emphasized = ownsHeading && emphasizedTitle(widget);
+    const emphasized = emphasizedTitle(widget);
     return m('section', {
-      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (widget.noBottomPadding ? ' DiyHome-widget--noBottomPadding' : '') + (widget.noBottomMargin ? ' DiyHome-widget--noBottomMargin' : '') + (ownsHeading ? (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles') : ''),
+      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (widget.noBottomPadding ? ' DiyHome-widget--noBottomPadding' : '') + (widget.noBottomMargin ? ' DiyHome-widget--noBottomMargin' : '') + (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles'),
       style: { ...radiusStyle(), ...(widget.loadingHeight ? { '--diy-home-loading-height': widget.loadingHeight + 'px' } : {}) },
       'data-home-widget': widget.id,
       'aria-label': widgetTitle(widget),
