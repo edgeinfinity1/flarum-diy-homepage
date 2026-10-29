@@ -233,6 +233,7 @@ export default class HomeSettingsPage extends ExtensionPage {
   widgetEditor(widget) {
     const definition = app.diyHomepage.get(widget.type);
     const expanded = this.expanded.has(widget.id);
+    const ownsHeading = widget.type !== 'fof' || widget.overrideHeading === true;
     const group = this.config.widgets.filter((item) => item.region === widget.region);
     return m('article.DiyHomeEditor-widget', { key: widget.id, className: widget.enabled === false ? 'DiyHomeEditor-widget--disabled' : '' }, [
       m('div.DiyHomeEditor-widgetBar', [
@@ -243,7 +244,8 @@ export default class HomeSettingsPage extends ExtensionPage {
           onclick: () => expanded ? this.expanded.delete(widget.id) : this.expanded.add(widget.id),
         }, [
           m(Icon, { name: widget.icon || definition?.icon || 'fas fa-puzzle-piece' }),
-          m('span', widget.title || (definition?.label ? definition.label() : widget.type)),
+          m('span', [widget.title || (definition?.label ? definition.label() : widget.type),
+            widget.type === 'fof' && widget.settings?.widgetId && m('span.DiyHomeEditor-providerId', ': ' + widget.settings.widgetId)]),
           m(Icon, { name: expanded ? 'fas fa-chevron-up' : 'fas fa-chevron-down' }),
         ]),
         m('div.DiyHomeEditor-widgetControls', [
@@ -262,16 +264,21 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.region'), this.select(widget.region, Object.fromEntries(regions.map((key) => [key, t('admin.regions.' + key)])), (value) => this.update(widget, 'region', value))),
           this.field(t('admin.audience'), this.select(widget.audience || 'all', Object.fromEntries(audiences.map((key) => [key, t('admin.audiences.' + key)])), (value) => this.update(widget, 'audience', value))),
         ])], true),
-        this.widgetSection('heading', [widget.type !== 'fof' && m('div.DiyHomeEditor-fieldGrid', [
+        this.widgetSection('heading', [
+        widget.type === 'fof' && m('div.Form-group', [
+          m(Switch, { state: widget.overrideHeading === true, onchange: (value) => this.update(widget, 'overrideHeading', value) }, t('admin.override_heading')),
+          m('p.helpText', t('admin.override_heading_help')),
+        ]),
+        ownsHeading && m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.title'), this.input(widget.title, (value) => this.update(widget, 'title', value))),
           this.field(t('admin.icon'), this.input(widget.icon, (value) => this.update(widget, 'icon', value), { placeholder: definition?.icon || 'fas fa-house' })),
         ]),
-        this.field(t('admin.title_style'), this.select(widget.titleStyle || 'inherit', Object.fromEntries(['inherit','fof','emphasized'].map((style) => [style, t('admin.title_styles.' + style)])), (value) => this.update(widget, 'titleStyle', value)), t('admin.title_style_help')),
-        widget.type !== 'fof' && this.field(t('admin.icon_image'), this.input(widget.iconImage, (value) => this.update(widget, 'iconImage', value))),
-        widget.type !== 'fof' && m('div.Form-group', m(Switch, { state: widget.showIcon !== false, onchange: (value) => this.update(widget, 'showIcon', value) }, t('admin.show_icon'))),
-        widget.type !== 'fof' && m('div.Form-group', m(Switch, { state: widget.showTitle !== false, onchange: (value) => this.update(widget, 'showTitle', value) }, t('admin.show_heading'))),
-        widget.type !== 'fof' && this.field(t('admin.subtitle'), this.input(widget.subtitle, (value) => this.update(widget, 'subtitle', value))),
-        widget.type !== 'fof' && m('div.DiyHomeEditor-fieldGrid', [
+        ownsHeading && this.field(t('admin.title_style'), this.select(widget.titleStyle || 'inherit', Object.fromEntries(['inherit','fof','emphasized'].map((style) => [style, t('admin.title_styles.' + style)])), (value) => this.update(widget, 'titleStyle', value)), t('admin.title_style_help')),
+        ownsHeading && this.field(t('admin.icon_image'), this.input(widget.iconImage, (value) => this.update(widget, 'iconImage', value))),
+        ownsHeading && m('div.Form-group', m(Switch, { state: widget.showIcon !== false, onchange: (value) => this.update(widget, 'showIcon', value) }, t('admin.show_icon'))),
+        ownsHeading && m('div.Form-group', m(Switch, { state: widget.showTitle !== false, onchange: (value) => this.update(widget, 'showTitle', value) }, t('admin.show_heading'))),
+        ownsHeading && this.field(t('admin.subtitle'), this.input(widget.subtitle, (value) => this.update(widget, 'subtitle', value))),
+        ownsHeading && m('div.DiyHomeEditor-fieldGrid', [
           this.field(t('admin.link_label'), this.input(widget.linkLabel, (value) => this.update(widget, 'linkLabel', value))),
           this.field(t('admin.link_url'), this.input(widget.linkUrl, (value) => this.update(widget, 'linkUrl', value), { placeholder: '/all' })),
         ])]),

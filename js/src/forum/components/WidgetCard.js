@@ -1,11 +1,9 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
-import Link from 'flarum/common/components/Link';
-import Icon from 'flarum/common/components/Icon';
-import WidgetIcon from './WidgetIcon';
 import Background from './Background';
+import WidgetHeading from './WidgetHeading';
 import { emphasizedTitle, radiusStyle } from '../../common/presentation';
-import { t, widgetTitle, visible, safeUrl, linkAttrs, displayText } from '../../common/utils';
+import { widgetTitle, visible } from '../../common/utils';
 
 export default class WidgetCard extends Component {
   view() {
@@ -15,26 +13,15 @@ export default class WidgetCard extends Component {
     if (definition.isAvailable && !definition.isAvailable(widget)) return null;
 
     const standalone = ['banner', 'fof', 'divider'].includes(widget.type);
-    const url = safeUrl(widget.linkUrl);
-    const emphasized = emphasizedTitle(widget);
+    const ownsHeading = widget.type !== 'fof' || widget.overrideHeading === true;
+    const emphasized = ownsHeading && emphasizedTitle(widget);
     return m('section', {
-      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (widget.noBottomPadding ? ' DiyHome-widget--noBottomPadding' : '') + (widget.noBottomMargin ? ' DiyHome-widget--noBottomMargin' : '') + (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles'),
+      className: 'DiyHome-widget DiyHome-widget--' + widget.type + (standalone ? ' DiyHome-widget--standalone' : '') + (widget.noBottomPadding ? ' DiyHome-widget--noBottomPadding' : '') + (widget.noBottomMargin ? ' DiyHome-widget--noBottomMargin' : '') + (ownsHeading ? (emphasized ? ' DiyHome-widget--emphasized' : ' DiyHome-widget--fofTitles') : ''),
       style: { ...radiusStyle(), ...(widget.loadingHeight ? { '--diy-home-loading-height': widget.loadingHeight + 'px' } : {}) },
       'data-home-widget': widget.id,
       'aria-label': widgetTitle(widget),
     }, [
-      widget.type !== 'fof' && widget.showTitle !== false && m('header.DiyHome-widgetHeader', [
-        m('div.DiyHome-heading', [
-          m('div.FofWidgets-Widget-title', [
-            widget.showIcon !== false && m(WidgetIcon, { icon: widget.icon || definition.icon, image: widget.iconImage, className: 'FofWidgets-Widget-title-icon DiyHome-headingIcon' }),
-            m('span.FofWidgets-Widget-title-label', widgetTitle(widget)),
-          ]),
-          widget.subtitle && m('div.FofWidgets-Widget-title-desc.DiyHome-subtitle', displayText(widget.subtitle)),
-        ]),
-        url && m(Link, { ...linkAttrs(url), className: 'DiyHome-more' }, [
-          widget.linkLabel ? displayText(widget.linkLabel) : t('forum.view_all'), m(Icon, { name: 'fas fa-arrow-right' }),
-        ]),
-      ]),
+      widget.type !== 'fof' && m(WidgetHeading, { widget }),
       standalone ? m(definition.component, { widget, settings: widget.settings || {} })
         : m('div.DiyHome-widgetContent', { className: widget.background?.mode && widget.background.mode !== 'theme' ? 'DiyHome-widgetContent--custom' : '' }, [
           m(Background, { background: widget.background }),

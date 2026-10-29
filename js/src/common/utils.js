@@ -84,7 +84,7 @@ export function validConfig(value) {
     for (const key of ['title', 'subtitle', 'icon', 'linkLabel', 'linkUrl']) {
       if (widget[key] !== undefined && (typeof widget[key] !== 'string' || widget[key].length > 2000)) throw new Error(text('admin.invalid_config'));
     }
-    for (const flag of ['noBottomPadding', 'noBottomMargin']) {
+    for (const flag of ['noBottomPadding', 'noBottomMargin', 'overrideHeading']) {
       if (widget[flag] !== undefined && typeof widget[flag] !== 'boolean') throw new Error(text('admin.invalid_config'));
     }
     const settings = widget.settings || {};

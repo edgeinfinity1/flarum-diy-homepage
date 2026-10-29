@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Preserve imported FoF heading markup and styles by default, including provider subtitles; scope icon alignment to DIY-authored headings.
+- Add per-instance heading override for FoF titles, subtitles, icons, links, visibility and style without changing other provider placements.
+- Show the registered provider ID in collapsed FoF widget editors.
+
+FoF 标题默认保留提供方结构和样式；可按首页实例启用覆盖，收起配置显示具体微件 ID。
+
 ## 0.1.5 - 2026-10-28
 
 - Support per-token JSON-string defaults such as `{username, "Guest"}`, preserving legacy guest labels, literal escaping and single-pass plain-text rendering.

@@ -77,3 +77,32 @@ test('explicit defaults override guest labels while legacy identity fallbacks re
   try { app.forum.attribute=()=>''; assert.equal(utils.displayText('{forumTitle, "Community"}/{forumDescription, ""}'),'Community/'); }
   finally {app.forum.attribute=attribute;app.session.user=null;}
 });
+
+const {withFofHeading}=await load('fofHeading.js');
+test('FoF override is isolated per imported component and preserves provider behavior',()=>{
+  class Provider {
+    constructor(attrs){this.attrs=attrs;}
+    header(){return ['provider title','provider subtitle'];}
+    content(){return this.attrs.state;}
+    view(){return this.attrs.state.loading?null:{header:this.header(),content:this.content()};}
+  }
+  const original=Provider.prototype.header, render=w=>w.showTitle===false?null:{title:w.title,subtitle:w.subtitle,link:w.linkUrl};
+  const Adapted=withFofHeading(Provider,render);
+  assert.equal(withFofHeading(Provider,render),Adapted);
+  const state={body:'body'};
+  const first=new Adapted({state,diyHomepageWidget:{overrideHeading:true,title:'First',subtitle:'Sub',linkUrl:'/all'}});
+  const second=new Adapted({state,diyHomepageWidget:{overrideHeading:true,title:'Second'}});
+  assert.equal(first.view().header.title,'First');assert.equal(second.view().header.title,'Second');
+  assert.equal(first.content(),state);assert.equal(Provider.prototype.header,original);
+  assert.deepEqual(new Provider({state}).header(),['provider title','provider subtitle']);
+  first.attrs.diyHomepageWidget.overrideHeading=false;assert.deepEqual(first.header(),['provider title','provider subtitle']);
+  first.attrs.diyHomepageWidget.overrideHeading=true;first.attrs.diyHomepageWidget.showTitle=false;assert.equal(first.header(),null);
+  state.loading=true;assert.equal(first.view(),null);
+  assert.equal(withFofHeading({view(){}},render),null);
+  assert.equal(withFofHeading(class {view(){}},render),null);
+});
+test('FoF override validates and survives JSON round trips',()=>{
+  const config=value=>JSON.stringify({version:1,widgets:[{id:'fof',type:'fof',region:'main',overrideHeading:value,title:'Saved',settings:{widgetId:'provider:widget'}}]});
+  for(const value of [true,false]) {const parsed=utils.validConfig(config(value));assert.equal(parsed.widgets[0].overrideHeading,value);assert.equal(parsed.widgets[0].title,'Saved');}
+  for(const value of ['true',1,{},[]])assert.throws(()=>utils.validConfig(config(value)));
+});

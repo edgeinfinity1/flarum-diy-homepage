@@ -1,3 +1,5 @@
+import WidgetHeading from './WidgetHeading';
+import { withFofHeading } from '../../common/fofHeading';
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import Link from 'flarum/common/components/Link';
@@ -10,6 +12,7 @@ import WidgetIcon from './WidgetIcon';
 import Background from './Background';
 
 const providerHeights = new Map();
+const renderFofHeading = (widget) => m(WidgetHeading, { widget });
 const providerHeightKey = (attrs) => [attrs.widget.id, attrs.widget.region, attrs.settings.widgetId, app.session.user?.id() || 'guest', window.innerWidth].join(':');
 function savedProviderHeight(attrs) {
   const key = providerHeightKey(attrs);
@@ -193,6 +196,15 @@ export class FoFWidget extends Component {
     if (!widget?.component || (typeof widget.isDisabled === 'function' ? widget.isDisabled() : widget.isDisabled)) return null;
     const extension = widget.extension || widget.id.split(':')[0];
     if (!(extension in flarum.extensions)) return null;
-    return m('div.DiyHome-fof', { style: { '--diy-home-loading-height': (Number(this.attrs.widget.loadingHeight) || savedProviderHeight(this.attrs)) + 'px' } }, m(widget.component, { state: app.widgets.states[id] || (app.widgets.states[id] = {}) }));
+    const config = this.attrs.widget;
+    const adapted = config.overrideHeading === true ? withFofHeading(widget.component, renderFofHeading) : null;
+    const fallback = config.overrideHeading === true && !adapted;
+    return m('div.DiyHome-fof', {
+      className: fallback ? 'DiyHome-fof--overrideHeading' : '',
+      style: { '--diy-home-loading-height': (Number(config.loadingHeight) || savedProviderHeight(this.attrs)) + 'px' },
+    }, [
+      fallback && m(WidgetHeading, { widget: config }),
+      m(adapted || widget.component, { state: app.widgets.states[id] || (app.widgets.states[id] = {}), ...(adapted ? { diyHomepageWidget: config } : {}) }),
+    ]);
   }
 }

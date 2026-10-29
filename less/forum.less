@@ -118,8 +118,8 @@
 }
 .DiyHome-heading { min-width: 0; }
 .DiyHome-subtitle { margin-top: 5px; line-height: 1.7; }
-.DiyHome-widget--emphasized {
-  .DiyHome-widgetHeader { margin-bottom: 14px; }
+.DiyHome-widget--emphasized .DiyHome-widgetHeader {
+  margin-bottom: 14px;
   .FofWidgets-Widget-title { font-size: 16px; font-weight: 650; color: var(--text-color); }
   .FofWidgets-Widget-title-icon { color: var(--primary-color); margin-right: 8px; font-size: .9em; }
   .FofWidgets-Widget-title-desc { color: var(--muted-color); font-size: 12px; font-weight: normal; }
@@ -690,7 +690,7 @@
 }
 
 // Align the glyph's box with the title, without changing heading size or spacing.
-.DiyHome-widget .FofWidgets-Widget-title {
+.DiyHome-widgetHeader > .DiyHome-heading > .FofWidgets-Widget-title {
   display: flex;
   align-items: center;
   .FofWidgets-Widget-title-icon { flex: 0 0 auto; line-height: 1; margin-top: 0; }
@@ -708,4 +708,10 @@
   > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-links,
   > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-stats,
   > .DiyHome-fof .FofWidgets-Widget-content { padding-bottom: 0; }
+}
+
+// Non-standard providers without the FoF header() hook use their root title slot.
+// Never hide nested content headings or alter a provider with override disabled.
+.DiyHome-fof--overrideHeading > .FofWidgets-Widget > .FofWidgets-Widget-title {
+  display: none !important;
 }

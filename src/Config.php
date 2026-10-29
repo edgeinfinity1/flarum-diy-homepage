@@ -64,7 +64,7 @@ class Config
             }
             self::url($widget['linkUrl'] ?? '');
             self::url($widget['iconImage'] ?? '');
-            self::booleans($widget, ['showIcon', 'showTitle', 'noBottomPadding', 'noBottomMargin']);
+            self::booleans($widget, ['showIcon', 'showTitle', 'noBottomPadding', 'noBottomMargin', 'overrideHeading']);
             self::number($widget, 'loadingHeight', 0, 3000, true);
             if (isset($widget['titleStyle']) && !in_array($widget['titleStyle'], ['inherit', 'fof', 'emphasized'], true)) {
                 throw new InvalidArgumentException('Invalid widget title style.');

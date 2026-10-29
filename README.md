@@ -114,3 +114,5 @@ The online-count permission grants counts only, without access to the online mem
 ## License
 
 [MIT](LICENSE).
+
+Imported FoF headings keep their original markup and styling by default. Enable **Heading and navigation link → Enable override** to customize the title, subtitle, icon, link, visibility and style for that homepage instance; other FoF placements are unaffected. Collapsed editors show the registered provider ID.
