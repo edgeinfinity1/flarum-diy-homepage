@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.6 - 2026-10-29
 
 - Preserve imported FoF heading markup and styles by default, including provider subtitles; scope icon alignment to DIY-authored headings.
 - Add per-instance heading override for FoF titles, subtitles, icons, links, visibility and style without changing other provider placements.
