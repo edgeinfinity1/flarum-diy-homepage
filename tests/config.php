@@ -234,4 +234,36 @@ foreach ([-1,3001,'auto'] as $height) {
     $bad['widgets'][0]['loadingHeight']=$height;
     check(rejected($bad), 'Invalid loading height accepted.');
 }
+$htmlWidget = ['id'=>'html-example', 'type'=>'html', 'region'=>'main', 'settings'=>[]];
+$htmlConfig = static fn (array $settings): array => ['version'=>1, 'widgets'=>[[...$htmlWidget, 'settings'=>$settings]]];
+foreach (['', "  <p>中文 👋 &amp; <strong>hello</strong></p>\n", '<style>.example { color: red; }</style><div class="example">{username}</div>', '</textarea><script>example()</script>', str_repeat('a', 50000), str_repeat('a', 49999).'👋'] as $html) {
+    $value = $htmlConfig(['html'=>$html]);
+    $json = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    check(Config::validate($json) === $value, 'Trusted HTML must be preserved exactly.');
+    $settings = ['edgeinfinity-diy-homepage.config'=>$json];
+    (new EdgeInfinity\DiyHomepage\Listener\ValidateSettings())->handle(new Flarum\Settings\Event\Saving($settings));
+    check($settings['edgeinfinity-diy-homepage.config'] === $json, 'Saving must not rewrite HTML source.');
+}
+check(!rejected($htmlConfig([])), 'Missing HTML must behave as empty content.');
+foreach ([null, false, 3, [], ['content'=>'<p>test</p>'], str_repeat('a', 50001), str_repeat('a', 50000).'👋'] as $html) {
+    $value = $htmlConfig(['html'=>$html]);
+    check(rejected($value), 'Invalid or oversized HTML accepted.');
+    $settings = ['edgeinfinity-diy-homepage.config'=>json_encode($value)];
+    $invalid = false;
+    try { (new EdgeInfinity\DiyHomepage\Listener\ValidateSettings())->handle(new Flarum\Settings\Event\Saving($settings)); }
+    catch (Flarum\Foundation\ValidationException) { $invalid = true; }
+    check($invalid, 'Invalid HTML must fail the settings save listener.');
+}
+$value = $htmlConfig(['html'=>str_repeat('中', 45000)]);
+check(rejected(json_encode($value, JSON_UNESCAPED_UNICODE)), 'HTML must respect the total 128 KiB limit.');
+$value = $htmlConfig(['html'=>['thirdParty'=>'setting']]);
+$value['widgets'][0]['type'] = 'acme:html';
+check(!rejected($value), 'HTML validation must not constrain third-party widget settings.');
+foreach (['fullWidth', 'top', 'main', 'sidebar', 'configOnly'] as $region) {
+    foreach (['all', 'guests', 'members'] as $audience) {
+        $value = $htmlConfig(['html'=>'<p>Content</p>']);
+        $value['widgets'][0] = [...$value['widgets'][0], 'region'=>$region, 'audience'=>$audience, 'showTitle'=>false, 'noBottomPadding'=>true];
+        check(Config::validate(json_encode($value)) === $value, 'HTML placement and heading flags must round-trip.');
+    }
+}
 echo $count." configuration checks passed.\n";

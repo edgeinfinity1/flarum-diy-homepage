@@ -10,13 +10,14 @@ import { t, parseConfig } from '../common/utils';
 import HomePage from './components/HomePage';
 import WidgetCard from './components/WidgetCard';
 import sidebarDropdowns from './sidebarDropdowns';
+import HtmlWidget from './components/HtmlWidget';
 import { BannerWidget, ImageWidget, NoticeWidget, LinksWidget, SearchWidget, FoFWidget, DividerWidget } from './components/ContentWidgets';
 import { DiscussionsWidget, UsersWidget, StatsWidget } from './components/DataWidgets';
 
 app.diyHomepage = new WidgetRegistry();
 registerBuiltins(app.diyHomepage);
 const components = { banner: BannerWidget, image: ImageWidget, notice: NoticeWidget, links: LinksWidget,
-  search: SearchWidget, fof: FoFWidget, divider: DividerWidget, discussions: DiscussionsWidget, users: UsersWidget, stats: StatsWidget };
+  search: SearchWidget, html: HtmlWidget, fof: FoFWidget, divider: DividerWidget, discussions: DiscussionsWidget, users: UsersWidget, stats: StatsWidget };
 Object.entries(components).forEach(([type, component]) => { app.diyHomepage.get(type).component = component; });
 
 app.initializers.add('edgeinfinity/diy-homepage', () => {

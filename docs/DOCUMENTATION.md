@@ -32,11 +32,11 @@ The READMEs include [English](../README.md#screenshots) and [Simplified Chinese]
 Install the stable package from Packagist in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.7"
+composer require edgeinfinity/diy-homepage:"^0.1.8"
 php flarum cache:clear
 ```
 
-The `^0.1.7` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
+The `^0.1.8` constraint accepts compatible 0.1.x updates. To update within that range, back up your forum and exported layout, then run `composer update edgeinfinity/diy-homepage --with-dependencies` and clear Flarum's cache. If you previously added the temporary GitHub VCS repository for evaluation, remove it with `composer config --unset repositories.diy-homepage` before switching to the stable constraint. Node.js is not required for installation.
 
 Enable **DIY Homepage** in the administration panel, then open its extension settings. A generic five-widget layout is supplied. Changes to the visual editor take effect after **Save Changes**; reload open forum pages to load the new configuration.
 
@@ -63,6 +63,7 @@ All instances support a region, audience (`all`, `guests`, `members`) and enable
 | `banner` | Ordered text blocks, buttons, theme/solid/gradient backgrounds, optional images and an optional decoration. Legacy title/text/image settings remain readable. |
 | `image` | Image URL, alternative text, optional destination and caption. Uses an existing image URL; does not upload files. |
 | `notice` | Ordered plain-text blocks, `soft`/`plain`/`accent` tone and action buttons. |
+| `html` | Trusted HTML fragment in `settings.html`, edited as source. Standard heading, background, audience, spacing and FoF export controls apply. |
 | `discussions` | Core `DiscussionListItem`, including its avatar, controls and extension hooks, with search/IDs, sort, limit, an independent excerpt switch and optional featured first discussion. Visible selected IDs lead in the supplied order; search results fill remaining slots without duplicates. |
 | `users` | Core Avatar, Tooltip, username helper and profile Link, with search/IDs, sort, limit and optional biography. Selected IDs retain the supplied order. |
 | `stats` | Individually enabled and ordered totals, online members, recent activity, post-type and tag counts. Counts follow the current actor's visibility. |
@@ -87,7 +88,25 @@ Discussion **Show post excerpts** (`settings.showExcerpt`) defaults to true, ind
 
 Open native dropdowns lift their widget above subsequent surfaces. In the sticky sidebar, menus use fixed viewport positioning to escape the scroll clip, then close if scrolling moves their anchor or the viewport is resized. This keeps the core controls, focus handling and keyboard dismissal.
 
-Editor text fields render plain text. Featured excerpts retain text, line breaks, paragraph boundaries, preformatted line breaks and HTTP(S) hyperlinks from the rendered first post, up to 360 text characters; media, embeds, scripts and hidden spoilers are omitted. The excerpt sits outside the discussion row's link so its links work independently. URLs configured in the editor accept forum paths beginning with `/`, or absolute HTTP(S) URLs. A local path is relative to the forum installation, including installations in a subdirectory. Script, data and protocol-relative configuration URLs are rejected.
+Ordinary editor text fields render plain text; Custom HTML is the explicit exception described below. Featured excerpts retain text, line breaks, paragraph boundaries, preformatted line breaks and HTTP(S) hyperlinks from the rendered first post, up to 360 text characters; media, embeds, scripts and hidden spoilers are omitted. The excerpt sits outside the discussion row's link so its links work independently. URLs configured in the editor accept forum paths beginning with `/`, or absolute HTTP(S) URLs. A local path is relative to the forum installation, including installations in a subdirectory. Script, data and protocol-relative configuration URLs are rejected in dedicated URL fields; HTML source is not processed by this URL helper.
+
+### Custom HTML
+
+Add **Custom HTML**, open **Content**, and paste an HTML fragment into **HTML source**. The type is `html` and the source is the string `settings.html`; missing or empty source produces empty content. Normal title, icon, subtitle, heading link, background, audience, enabled state, spacing, duplication, ordering and JSON import/export all work. Configuration-only instances are available through the optional FoF bridge. No additional data request, database table or migration is needed.
+
+```html
+<div class="community-card">
+  <h3>Welcome to our community</h3>
+  <p>Read the latest <a href="/all">discussions</a>.</p>
+  <ul><li>Share an idea</li><li>Meet other members</li></ul>
+</div>
+```
+
+The source is saved verbatim, including whitespace, Unicode and HTML entities. Both server validation and JSON import accept up to 50,000 Unicode characters per HTML widget; the entire JSON configuration remains limited to 128 KiB on save. Titles and other ordinary text fields retain their existing escaped rendering and variable support. HTML source does not interpolate variables, Markdown, BBCode or PHP: `{username}` stays literal and actor data never becomes markup.
+
+This is **trusted administrator HTML**, rendered via Mithril `m.trust`, without sanitization or sandboxing. Flarum's normal administration permission is required to save settings. Event attributes, embedded content and CSS can affect the page or execute code; never use untrusted input or store secrets. Audience filtering is not a general secret-storage facility. The editor deliberately displays source only, so opening or editing a fragment does not execute it in the administrator page. Script tags are not a supported script-loading mechanism and are not recreated or evaluated by this widget; implement JavaScript integrations as an extension with an appropriate lifecycle.
+
+Use a fragment, not an entire document with `html`, `head` or `body`. Scope any CSS to `[data-home-widget="your-widget-id"] .DiyHome-html` to avoid affecting other widgets; styles are not automatically scoped. Images, videos and iframes receive a maximum-width default, and wide content scrolls within the widget. Explicit inline styles may override these defaults. The usual light/dark background controls remain available. HTML links use native browser navigation rather than Flarum's Link component: include your installation subdirectory in root-relative links and add `rel="noopener noreferrer"` when using `target="_blank"`. Third-party embeds remain subject to the browser's and provider's policies.
 
 ## Backgrounds, text and decoration
 
@@ -221,7 +240,7 @@ Registry methods are `register(type, definition)`, `get(type)` and `all()` (an a
 - `component`, a Mithril component receiving `{ widget, settings }`.
 - Optional `isAvailable(widget)` to suppress an unavailable instance on the forum.
 
-Fields use `{ key, type, label, options?, help?, default?, min?, max?, step? }`. Supported types: `text`, `textarea`, `url`, `number` (defaults to 1–20, with optional range and step), `boolean`, `select`, `links`, `fof`, `themeColors`, plus the built-in `texts` and `stats` editors. A `themeColors` field edits `{light, dark}` hexadecimal colors, with blank values retaining the provider default; JSON import validates this shape for registered fields. A select's `options` maps values to strings or label functions. Field labels and help may be strings or functions. A boolean field's `default` determines its editor state when the setting is absent; it does not write a value until edited. A links field edits the action/link schema described above. Definitions can set `loading: true` to expose the instance's loading-height editor; the provider must consume `--diy-home-loading-height` while loading. Custom JSON-safe settings are preserved; built-in property names retain their validation rules. Providers should validate their additional options on the server and handle loading, empty and error states in their components. Unregistered types remain in saved configuration and are hidden on the forum until their provider is available.
+Fields use `{ key, type, label, options?, help?, default?, min?, max?, step? }`. Supported types: `text`, `textarea`, `code` (a multiline, left-to-right, monospace source editor without live preview), `url`, `number` (defaults to 1–20, with optional range and step), `boolean`, `select`, `links`, `fof`, `themeColors`, plus the built-in `texts` and `stats` editors. A `themeColors` field edits `{light, dark}` hexadecimal colors, with blank values retaining the provider default; JSON import validates this shape for registered fields. A select's `options` maps values to strings or label functions. Field labels and help may be strings or functions. A boolean field's `default` determines its editor state when the setting is absent; it does not write a value until edited. A links field edits the action/link schema described above. Definitions can set `loading: true` to expose the instance's loading-height editor; the provider must consume `--diy-home-loading-height` while loading. Custom JSON-safe settings are preserved; built-in property names retain their validation rules. Providers should validate their additional options on the server and handle loading, empty and error states in their components. Unregistered types remain in saved configuration and are hidden on the forum until their provider is available.
 
 
 ## Text variables, actions and spacing
@@ -233,7 +252,7 @@ A per-use default can be written as `{username, "Guest"}` or `{forumDescription,
 
 The default must be a JSON double-quoted string, with optional spaces/tabs around the name and comma. JSON escapes such as `\"`, `\\`, `\n` and `\uXXXX` are supported; commas and braces inside the quoted string are ordinary text. Single quotes, bare values, expressions and nested variables are not supported. Unknown variables and malformed tokens remain visible unchanged. `{{username, "Guest"}}` displays `{username, "Guest"}` literally. Defaults and resolved values are never interpolated again or interpreted as HTML.
 
-Supported fields: native widget title, subtitle and heading-link label (also FoF imports with heading override enabled); banner/notice text blocks (including legacy text); action labels; image alt text and caption; search placeholder; statistics custom labels; page-banner title and subtitle. URLs, API queries, CSS, navigation labels and imported provider content are outside interpolation.
+Supported fields: native widget title, subtitle and heading-link label (also FoF imports with heading override enabled); banner/notice text blocks (including legacy text); action labels; image alt text and caption; search placeholder; statistics custom labels; page-banner title and subtitle. URLs, API queries, CSS, custom HTML source, navigation labels and imported provider content are outside interpolation.
 
 Each action/link accepts style: auto, primary or secondary. Missing/auto preserves existing classes, including the first banner button being primary. Explicit styles follow the item when reordered. All widgets with editable actions use the same behavior.
 
@@ -268,7 +287,7 @@ From a full source checkout, run `composer install`, `composer validate --strict
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) and [RELEASING.md](../RELEASING.md) in a full Git checkout for build, CI and release procedures. Development-only files are omitted from distribution archives. Integration review also needs a running forum: guest/member routes, admin saves, data permissions, themes, responsive widths and the optional FoF bridge.
 
-No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. Version 0.1.7 has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment.
+No database migration or custom table is created. Disabling the extension removes its routes and restores the core default-route behavior while retaining its settings. Export the layout before uninstalling. Version 0.1.8 has been verified on Flarum 2.0.2; review compatibility with your theme and widget providers before deployment.
 
 ## Publishing releases and Packagist automation
 
@@ -291,7 +310,7 @@ Manage these under **Settings → Secrets and variables → Actions**. Tokens be
 
 1. Update `CHANGELOG.md`, `js/package.json` and the root package version in `js/package-lock.json`. Keep both lockfile version fields consistent. Update installation examples when the supported version range changes.
 2. Run the checks in [CONTRIBUTING.md](../CONTRIBUTING.md), rebuild the frontend if needed, and commit the release changes. Check the installation's guest/member routes, permissions and optional providers when behavior changes.
-3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.8 -m "DIY Homepage 0.1.8"` followed by `git push origin v0.1.8`.
+3. Push the reviewed commit to `main` and wait for **Checks** to pass. Create and push an annotated version tag on that commit, for example `git tag -a v0.1.9 -m "DIY Homepage 0.1.9"` followed by `git push origin v0.1.9`.
 4. Open **Releases → Draft a new release** on GitHub, select that existing tag, add release notes and click **Publish release**. Drafts do not trigger synchronization. Publishing a prerelease also triggers it; the supported tag suffixes are numbered alpha/beta/rc versions such as `v0.2.0-beta.1`.
 5. Check the **Publish to Packagist** workflow and the version on the package page. The workflow reruns the PHP, translation, frontend-build and publication-script checks against the selected tag before requesting an update. It then waits until Packagist's Composer P2 index reports that version at the exact tagged commit. A successful HTTP update request alone does not mark the job successful. The package-details API is cached for up to twelve hours, so the workflow verifies the installation index instead.
 

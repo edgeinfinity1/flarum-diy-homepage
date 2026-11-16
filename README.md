@@ -50,6 +50,7 @@ Administration · separate light/dark backgrounds
 - Four layout regions: full width, upper, main and sidebar, with an optional sticky sidebar and stacked mobile layout.
 - A configuration-only area keeps fully editable widget copies off the homepage while making them available to the optional Friends of Flarum Widgets extension for placement on other pages, with independent content and heading styles.
 - Built-in banners, images, notices, discussions, users, statistics, links, search and line/blank dividers.
+- Custom HTML widgets for trusted administrator-authored fragments, with the existing headings, backgrounds, audiences and FoF bridge.
 - Root homepage modes for everyone, guests only or disabled; plain-text variables, explicit primary/secondary buttons, separate statistics fonts and optional bottom padding/gap removal.
 - Add, duplicate and reorder widgets, choose guest/member audiences, and import or export layouts as JSON.
 - Independent page heading, icon and subtitle; widget backgrounds, gradients, images, text styles and actions with light/dark palettes.
@@ -62,12 +63,17 @@ Administration · separate light/dark backgrounds
 | Widget | Use it for |
 | --- | --- |
 | Banner, image, notice | Welcome content, announcements, images and calls to action |
+| Custom HTML | Trusted HTML content supplied by an administrator |
 | Discussions | Search-based or selected discussions, optional excerpts and a featured first item |
 | Users | Search-based or selected members, with optional biographies |
 | Statistics | Totals, recent activity, tag discussion counts and permission-controlled online counts |
 | Links, search | Navigation, compose/login actions and discussion search |
 | Divider / spacer | A horizontal separator or blank space, with an optional heading |
 | FoF widget | An installed and enabled FoF widget provider |
+
+## Custom HTML
+
+Add the widget and enter a fragment under **Content → HTML source**. Source is preserved and rendered without sanitization or text-variable interpolation; only paste trusted code and never include secrets. Each fragment allows 50,000 characters, within the existing 128 KiB configuration limit. The administrator editor shows source only. Scope CSS to the widget, for example `[data-home-widget="your-id"] .DiyHome-html`. Script tags are not a supported script loader, and PHP is not executed. HTML links use native browser behavior; supply any installation subdirectory and new-tab link attributes yourself. Existing text widgets remain plain text. See [Custom HTML](docs/DOCUMENTATION.md#custom-html) for an example.
 
 ## Installation
 
@@ -76,7 +82,7 @@ Requires PHP `^8.3` and Flarum `^2.0.2`. FoF Widgets Core is optional. Compiled 
 Install the stable package from [Packagist](https://packagist.org/packages/edgeinfinity/diy-homepage) in your Flarum directory:
 
 ```sh
-composer require edgeinfinity/diy-homepage:"^0.1.7"
+composer require edgeinfinity/diy-homepage:"^0.1.8"
 php flarum cache:clear
 ```
 

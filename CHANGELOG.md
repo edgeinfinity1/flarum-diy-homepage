@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.8 - 2026-11-16
+
+- Add a Custom HTML widget for trusted administrator-authored fragments, with a source-only editor, server/client validation and the existing placement, audience, heading, background and FoF bridge controls.
+- Preserve HTML source verbatim without text-variable interpolation; document the trust boundary and scope media/overflow defaults to the new widget.
+- Add English/Chinese help and regressions for source preservation, size/type limits, the settings listener and source-only editing.
+
+新增“自定义 HTML”微件，沿用标题、外观、受众和 FoF 桥接；后台仅编辑源码，前后端校验类型与长度，原样保留内容且不替换用户变量。双语说明明确可信管理员 HTML 的边界。
+
 ## 0.1.7 - 2026-10-30
 
 - Keep FoF heading style independent of heading override: standard, emphasized and page-inherited appearance remain available while provider content and layout are preserved.

@@ -89,6 +89,10 @@ export function validConfig(value) {
     }
     const settings = widget.settings || {};
     if (typeof settings !== 'object' || Array.isArray(settings)) throw new Error(text('admin.invalid_config'));
+    if (widget.type === 'html' && Object.prototype.hasOwnProperty.call(settings, 'html')
+      && (typeof settings.html !== 'string' || Array.from(settings.html).length > 50000)) {
+      throw new Error(text('admin.invalid_html'));
+    }
     for (const field of app.diyHomepage?.get(widget.type)?.fields || []) {
       if (field.type !== 'themeColors' || settings[field.key] === undefined) continue;
       const colors = settings[field.key];

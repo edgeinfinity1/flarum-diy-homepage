@@ -37,6 +37,9 @@ edgeinfinity-diy-homepage:
       signup: "加入社区"
       login: "登录"
     widgets:
+      html:
+        name: "自定义 HTML"
+        title: "自定义内容"
       divider:
         name: "分割 / 空白"
         title: "分区"
@@ -173,10 +176,12 @@ edgeinfinity-diy-homepage:
     configuration: "首页配置 JSON"
     apply_json: "将 JSON 应用到编辑器"
     invalid_config: "请使用 version: 1、最多 50 个微件、不重复的 ID，以及有效的区域和可见人群。"
+    invalid_html: "HTML 源码必须为文本，且不超过 50,000 字符。"
     unavailable_type: "提供该微件的插件当前不可用，配置仍完整保留。"
     choose_fof: "选择已注册的 FoF 微件…"
     bridge_help: "启用可选的 Friends of Flarum Widgets 扩展后，原生实例会出现在该扩展的微件库中，可放到论坛其它页面。“仅配置”使实例不在本首页显示。受众和启用设置仍然生效。"
     fields:
+      html: "HTML 源码"
       dividerStyle: "分割样式"
       height: "内容高度（px）"
       eyebrow: "顶部小标题"
@@ -201,6 +206,7 @@ edgeinfinity-diy-homepage:
       texts: "文本块"
       stats: "统计项目"
     field_help:
+      html: "填写可信的 HTML 内容片段，最多 50,000 字符，整份配置仍限 128 KiB。内容直接渲染，不进行净化或文本变量替换；CSS 和事件属性可能影响页面及安全，请勿粘贴不可信代码或秘密信息。样式请限定到本微件。后台仅编辑源码；script 标签不作为受支持的脚本加载方式。"
       query: "使用 Flarum 搜索语法，例如 tag:news；用户集合使用论坛支持的用户搜索。"
       ids: "以逗号或空格分隔数字 ID，最多 20 个。指定后优先于搜索筛选，并按填写顺序显示；不可见记录自动略过。"
       discussion_ids: "以逗号或空格分隔数字 ID，最多 20 个。按填写顺序优先显示；不足显示数量时，以搜索结果补足并去重。不可见记录自动略过。"

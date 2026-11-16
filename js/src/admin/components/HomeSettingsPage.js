@@ -283,7 +283,7 @@ export default class HomeSettingsPage extends ExtensionPage {
           this.field(t('admin.link_url'), this.input(widget.linkUrl, (value) => this.update(widget, 'linkUrl', value), { placeholder: '/all' })),
         ])]),
         this.widgetSection('spacing', [
-          (['banner', 'notice', 'stats', 'links', 'fof'].includes(widget.type) || ['solid', 'gradient'].includes(widget.background?.mode)) && m('div.Form-group', m(Switch, { state: widget.noBottomPadding === true, onchange: (value) => this.update(widget, 'noBottomPadding', value) }, t('admin.no_bottom_padding'))),
+          (['banner', 'notice', 'html', 'stats', 'links', 'fof'].includes(widget.type) || ['solid', 'gradient'].includes(widget.background?.mode)) && m('div.Form-group', m(Switch, { state: widget.noBottomPadding === true, onchange: (value) => this.update(widget, 'noBottomPadding', value) }, t('admin.no_bottom_padding'))),
           m('div.Form-group', m(Switch, { state: widget.noBottomMargin === true, onchange: (value) => this.update(widget, 'noBottomMargin', value) }, t('admin.no_bottom_margin'))),
           m('p.helpText', t('admin.spacing_help')),
         ]),
@@ -370,7 +370,13 @@ export default class HomeSettingsPage extends ExtensionPage {
       m(Switch, { state: value === undefined ? field.default === true : !!value, onchange: update }, label),
       field.help && m('p.helpText', typeof field.help === 'function' ? field.help() : field.help),
     ]);
-    if (field.type === 'textarea') {
+    if (field.type === 'code') {
+      // Edit source as a value, never as live markup in the administrator page.
+      input = m('textarea.FormControl.DiyHomeEditor-code', {
+        rows: 12, dir: 'ltr', spellcheck: false, autocapitalize: 'off', autocomplete: 'off',
+        value: value ?? '', oninput: (event) => update(event.target.value),
+      });
+    } else if (field.type === 'textarea') {
       input = m('textarea.FormControl', { rows: 4, value: value || '', oninput: (event) => update(event.target.value) });
     } else if (field.type === 'select') {
       input = this.select(value || Object.keys(field.options || {})[0], field.options || {}, update);

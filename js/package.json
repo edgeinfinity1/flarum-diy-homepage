@@ -1,6 +1,6 @@
 {
   "name": "@edgeinfinity/diy-homepage",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "scripts": {
     "test": "node --test ../tests/frontend.mjs",

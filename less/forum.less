@@ -407,6 +407,25 @@
 }
 .DiyHome-readMore { font-size: 12px; }
 
+// Keep ordinary HTML fragments readable in both narrow sidebars and full rows.
+// These rules are layout defaults, not a sandbox for administrator-authored CSS.
+.DiyHome-html {
+  padding: 16px;
+  background: var(--control-bg);
+  border-radius: var(--diy-home-radius, var(--border-radius));
+  overflow-x: auto;
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+  img, video, iframe { max-width: 100%; }
+  img, video { height: auto; }
+}
+
+.DiyHome-widgetContent--custom .DiyHome-html {
+  padding: 0;
+  background: transparent;
+}
+
 .DiyHome-stats {
   margin: 0;
   padding: 16px;
@@ -716,6 +735,7 @@
 .DiyHome-widget--noBottomPadding {
   > .DiyHome-banner, > .DiyHome-widgetContent,
   > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-notice,
+  > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-html,
   > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-links,
   > .DiyHome-widgetContent > .DiyHome-surfaceForeground > .DiyHome-stats,
   > .DiyHome-fof .FofWidgets-Widget-content { padding-bottom: 0; }

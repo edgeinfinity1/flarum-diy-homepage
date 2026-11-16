@@ -136,3 +136,49 @@ test('FoF style and saved override content survive configuration round trips ind
     assert.deepEqual(parsed.widgets[0],widget);
   }
 });
+
+
+test('HTML configuration preserves source and validates Unicode length without constraining third parties',()=>{
+  const config=settings=>JSON.stringify({version:1,widgets:[{id:'html',type:'html',region:'main',settings}]});
+  for(const html of ['', '  <p>中文 👋 &amp; {username}</p>\n', '<style>.sample { color: red }</style><div class="sample">Hi</div>', '</textarea><script>example()</script>', 'a'.repeat(50000), 'a'.repeat(49999)+'👋']) {
+    assert.equal(utils.validConfig(config({html})).widgets[0].settings.html,html);
+  }
+  assert.deepEqual(utils.validConfig(config({})).widgets[0].settings,{});
+  for(const html of [null,false,1,[],{},'a'.repeat(50001),'a'.repeat(50000)+'👋']) assert.throws(()=>utils.validConfig(config({html})),/invalid_html/);
+  assert.doesNotThrow(()=>utils.validConfig(config({html:{custom:true}}).replace('"type":"html"','"type":"acme:html"')));
+});
+
+test('HTML is registered with empty source and a code editor in both registries',()=>{
+  const register=new Function('text',source('definitions.js').replace(/^import .*;\n/gm,'').replace('export default ','')+'\nreturn registerBuiltins;')(x=>x);
+  const definitions=new Map();register({register:(type,definition)=>definitions.set(type,definition)});
+  const html=definitions.get('html');
+  assert.deepEqual(html.defaults,{html:''});assert.equal(html.fields[0].type,'code');
+  assert.equal(html.fields[0].key,'html');assert.equal(html.fields[0].help(),'admin.field_help.html');
+  assert.equal(html.label(),'lib.widgets.html.name');assert.equal(html.title(),'lib.widgets.html.title');
+});
+
+test('HTML component passes only administrator source to trust and retains literal variables',()=>{
+  const calls=[],m=(tag,children)=>({tag,children});m.trust=value=>(calls.push(value),{trusted:value});
+  const Html=new Function('Component','m',source('../forum/components/HtmlWidget.js').replace(/^import .*;\n/gm,'').replace('export default ','')+'\nreturn HtmlWidget;')(class {},m);
+  const component=new Html();
+  for(const html of ['<p>{username} &amp; 中文</p>\n','',null,{},undefined]) {
+    component.attrs={settings:{html}};
+    const node=component.view();
+    assert.equal(node.tag,'div.DiyHome-html');assert.equal(node.children.trusted,typeof html==='string'?html:'');
+  }
+  assert.equal(calls.length,5);
+});
+
+test('HTML editor binds source as a textarea value and commits edits without rendering markup',()=>{
+  const m=(tag,attrs,children)=>({tag,attrs,children});
+  const Page=new Function('ExtensionPage','m','t',source('../admin/components/HomeSettingsPage.js').replace(/^import .*;\n/gm,'').replace('export default ','')+'\nreturn HomeSettingsPage;')(class {},m,x=>x);
+  const editor=new Page();editor.field=(label,input,help)=>({label,input,help});
+  const widget={type:'html',settings:{html:'</textarea><img onerror="example()" src="x">'}};
+  let commit;editor.update=(...args)=>{commit=args;};
+  const view=editor.settingField(widget,{key:'html',type:'code',label:'HTML',help:()=> 'Trusted source only'});
+  assert.equal(view.input.tag,'textarea.FormControl.DiyHomeEditor-code');
+  assert.equal(view.input.attrs.value,widget.settings.html);assert.equal(view.input.attrs.spellcheck,false);assert.equal(view.input.attrs.dir,'ltr');
+  assert.equal(view.input.children,undefined);assert.equal(view.help,'Trusted source only');
+  view.input.attrs.oninput({target:{value:'<p>Updated</p>'}});
+  assert.deepEqual(commit,[widget,'html','<p>Updated</p>',true]);
+});

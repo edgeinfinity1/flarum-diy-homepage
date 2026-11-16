@@ -21,6 +21,11 @@ export default function registerBuiltins(registry) {
       defaults: { tone: 'soft', actions: [] },
       fields: [field('texts', 'texts'), field('tone', 'select', { soft: option('soft'), plain: option('plain'), accent: option('accent') }), field('actions', 'links')],
     },
+    html: {
+      icon: 'fas fa-code',
+      defaults: { html: '' },
+      fields: [{ ...field('html', 'code'), help: () => text('admin.field_help.html') }],
+    },
     discussions: {
       icon: 'far fa-comments',
       defaults: { query: '', sort: '-lastPostedAt', limit: 5, featured: false, showExcerpt: true },

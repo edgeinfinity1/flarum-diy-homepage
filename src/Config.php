@@ -74,6 +74,12 @@ class Config
             if (! is_array($settings)) {
                 throw new InvalidArgumentException('Widget settings must be an object.');
             }
+            // HTML is administrator-authored source, not a text block or a URL.
+            // Preserve it verbatim; third-party widget settings remain untouched.
+            if ($widget['type'] === 'html' && array_key_exists('html', $settings)
+                && (!is_string($settings['html']) || mb_strlen($settings['html']) > 50000)) {
+                throw new InvalidArgumentException('Use HTML source of at most 50000 characters for '.$widget['id'].'.');
+            }
             if (isset($settings['loadMode']) && !in_array($settings['loadMode'], ['preload','async'], true)) throw new InvalidArgumentException('Invalid loading mode.');
             self::typography($settings);
             self::number($settings, 'height', 0, 300);
